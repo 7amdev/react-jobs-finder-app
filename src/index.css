@@ -39,6 +39,10 @@ ul {
   list-style: none;
 }
 
+img {
+  width: 100%;
+}
+
 #root {
   height: 100%;
 }
@@ -272,6 +276,14 @@ ul {
 }
 .job-details {
   height: 100%;
-  border-radius: 10px;
+  border-radius: 20px;
   background-color: hsl(0, 0%, 92%);
+  padding: 20px;
+}
+
+.job-details__img {
+  border-radius: 20px;
+  height: 300px;
+  object-fit: cover;
+  object-position: 50% 70%;
 }
