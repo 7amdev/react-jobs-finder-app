@@ -21,18 +21,112 @@ export default function App() {
             jobs<span className="fw-700 fs-italic">finder</span>
           </a>
           <span className="header__separator">|</span>
-          <button className="bookmark">
-            bookmarks
-            <svg
-              className="bookmark__icon"
-              width="15"
-              height="15"
-              viewBox="0 0 15 15"
-              fill="none"
-            >
-              <path d="M4 6H11L7.5 10.5L4 6Z" fill="currentColor"></path>
-            </svg>
-          </button>
+          <div className="bookmark">
+            <button className="bookmark__button">
+              bookmarks
+              <svg
+                className="bookmark__icon"
+                width="15"
+                height="15"
+                viewBox="0 0 15 15"
+                fill="none"
+              >
+                <path d="M4 6H11L7.5 10.5L4 6Z" fill="currentColor"></path>
+              </svg>
+            </button>
+            <ul className="bookmark__list">
+              <li className="bookmark__item">
+                <a href="#" className="job-item bookmark__link">
+                  <div className="job-item__badge-letter">AS</div>
+                  <section className="job-item__info">
+                    <p className="job-item__title">
+                      Front-end Developer - React
+                    </p>
+                    <p className="job-item__company">AT Security</p>
+                  </section>
+                  <div className="job-item__col">
+                    <button className="job-item__bookmark">
+                      <svg
+                        className="job-item__icon"
+                        width="15"
+                        height="15"
+                        viewBox="0 0 15 15"
+                        fill="none"
+                      >
+                        <path
+                          d="M3.5 2C3.22386 2 3 2.22386 3 2.5V13.5C3 13.6818 3.09864 13.8492 3.25762 13.9373C3.41659 14.0254 3.61087 14.0203 3.765 13.924L7.5 11.5896L11.235 13.924C11.3891 14.0203 11.5834 14.0254 11.7424 13.9373C11.9014 13.8492 12 13.6818 12 13.5V2.5C12 2.22386 11.7761 2 11.5 2H3.5Z"
+                          fill="currentColor"
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                        ></path>
+                      </svg>
+                    </button>
+                    <p className="job-item__age">4d</p>
+                  </div>
+                </a>
+              </li>
+              <li className="bookmark__item">
+                <a href="#" className="job-item bookmark__link">
+                  <div className="job-item__badge-letter">AS</div>
+                  <section className="job-item__info">
+                    <p className="job-item__title">
+                      Front-end Developer - React
+                    </p>
+                    <p className="job-item__company">AT Security</p>
+                  </section>
+                  <div className="job-item__col">
+                    <button className="job-item__bookmark">
+                      <svg
+                        className="job-item__icon"
+                        width="15"
+                        height="15"
+                        viewBox="0 0 15 15"
+                        fill="none"
+                      >
+                        <path
+                          d="M3.5 2C3.22386 2 3 2.22386 3 2.5V13.5C3 13.6818 3.09864 13.8492 3.25762 13.9373C3.41659 14.0254 3.61087 14.0203 3.765 13.924L7.5 11.5896L11.235 13.924C11.3891 14.0203 11.5834 14.0254 11.7424 13.9373C11.9014 13.8492 12 13.6818 12 13.5V2.5C12 2.22386 11.7761 2 11.5 2H3.5Z"
+                          fill="currentColor"
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                        ></path>
+                      </svg>
+                    </button>
+                    <p className="job-item__age">4d</p>
+                  </div>
+                </a>
+              </li>
+              <li className="bookmark__item">
+                <a href="#" className="job-item bookmark__link">
+                  <div className="job-item__badge-letter">AS</div>
+                  <section className="job-item__info">
+                    <p className="job-item__title">
+                      Front-end Developer - React
+                    </p>
+                    <p className="job-item__company">AT Security</p>
+                  </section>
+                  <div className="job-item__col">
+                    <button className="job-item__bookmark">
+                      <svg
+                        className="job-item__icon"
+                        width="15"
+                        height="15"
+                        viewBox="0 0 15 15"
+                        fill="none"
+                      >
+                        <path
+                          d="M3.5 2C3.22386 2 3 2.22386 3 2.5V13.5C3 13.6818 3.09864 13.8492 3.25762 13.9373C3.41659 14.0254 3.61087 14.0203 3.765 13.924L7.5 11.5896L11.235 13.924C11.3891 14.0203 11.5834 14.0254 11.7424 13.9373C11.9014 13.8492 12 13.6818 12 13.5V2.5C12 2.22386 11.7761 2 11.5 2H3.5Z"
+                          fill="currentColor"
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                        ></path>
+                      </svg>
+                    </button>
+                    <p className="job-item__age">4d</p>
+                  </div>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
         <form className="search-form" action="#">
           <div className="search-form__content">
@@ -115,7 +209,7 @@ export default function App() {
               </svg>
             </button>
             <ul className="jobs__list">
-              <li className="jobs__item job-item">
+              <li className="jobs__item job-item self-center">
                 <div className="job-item__badge-letter">AS</div>
                 <section className="job-item__info">
                   <p className="job-item__title">Front-end Developer - React</p>
@@ -141,7 +235,7 @@ export default function App() {
                   <p className="job-item__age">4d</p>
                 </div>
               </li>
-              <li className="jobs__item job-item job-item--active">
+              <li className="jobs__item job-item job-item--active self-center">
                 <div className="job-item__badge-letter">9T</div>
                 <section className="job-item__info">
                   <p className="job-item__title">Front-end React Engineer</p>
@@ -167,7 +261,7 @@ export default function App() {
                   <p className="job-item__age">2d</p>
                 </div>
               </li>
-              <li className="jobs__item job-item">
+              <li className="jobs__item job-item self-center">
                 <div className="job-item__badge-letter">AT</div>
                 <section className="job-item__info">
                   <p className="job-item__title">Junior Software devolper</p>
@@ -280,10 +374,9 @@ export default function App() {
                         height="15"
                         viewBox="0 0 15 15"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          d="M1 1C0.447715 1 0 1.44772 0 2V13C0 13.5523 0.447715 14 1 14H14C14.5523 14 15 13.5523 15 13V2C15 1.44772 14.5523 1 14 1H1ZM7.5 10.625C9.22589 10.625 10.625 9.22589 10.625 7.5C10.625 5.77411 9.22589 4.375 7.5 4.375C5.77411 4.375 4.375 5.77411 4.375 7.5C4.375 9.22589 5.77411 10.625 7.5 10.625Z"
+                          d="M1 2H14V13H1L1 2ZM0 2C0 1.44772 0.447715 1 1 1H14C14.5523 1 15 1.44772 15 2V13C15 13.5523 14.5523 14 14 14H1C0.447715 14 0 13.5523 0 13V2ZM4.875 7.5C4.875 6.05025 6.05025 4.875 7.5 4.875C8.94975 4.875 10.125 6.05025 10.125 7.5C10.125 8.94975 8.94975 10.125 7.5 10.125C6.05025 10.125 4.875 8.94975 4.875 7.5ZM7.5 3.875C5.49797 3.875 3.875 5.49797 3.875 7.5C3.875 9.50203 5.49797 11.125 7.5 11.125C9.50203 11.125 11.125 9.50203 11.125 7.5C11.125 5.49797 9.50203 3.875 7.5 3.875Z"
                           fill="currentColor"
                           fill-rule="evenodd"
                           clip-rule="evenodd"
@@ -353,14 +446,21 @@ export default function App() {
               </div>
               <div className="grow-1 basis-0">
                 <ul className="job-details__quotes">
-                  <li>Pay & Benefits are awesome.</li>
-                  <li>Comfortable to work here for sure.</li>
-                  <li>Nice people that will support you</li>
-                  <li>All good. Recommended.</li>
+                  <li className="job-details__quote">
+                    Pay & Benefits are awesome.
+                  </li>
+                  <li className="job-details__quote">
+                    Comfortable to work here for sure.
+                  </li>
+                  <li className="job-details__quote">
+                    Nice people that will support you
+                  </li>
+                  <li className="job-details__quote">All good. Recommended.</li>
                 </ul>
               </div>
             </section>
           </section>
+          <div className="spinner"></div>
         </section>
       </main>
     </>
