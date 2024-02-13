@@ -124,7 +124,10 @@ img {
 }
 
 .header__top {
-  position: relative;
+  /* 
+    Because header__top is a flex-item, it already has a stack-context so 
+    there is no need to specify position: relative 
+  */
   z-index: 1;
   display: flex;
   align-items: center;
@@ -165,6 +168,10 @@ img {
   padding: 12px;
   border-radius: 7px;
   backdrop-filter: blur(3px);
+  visibility: hidden;
+}
+.bookmark__list--active {
+  visibility: visible;
 }
 .bookmark__item {
   margin-block: 12px;
@@ -481,11 +488,6 @@ img {
   font-size: 70px;
   line-height: 37px;
   color: hsl(0 0% 70% / 0.7);
-  /* position: absolute;
-  top: 0;
-  left: 0;
-  font-size: 60px;
-  line-height: 0.6; */
 }
 
 .spinner {

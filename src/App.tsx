@@ -34,7 +34,7 @@ export default function App() {
                 <path d="M4 6H11L7.5 10.5L4 6Z" fill="currentColor"></path>
               </svg>
             </button>
-            <ul className="bookmark__list">
+            <ul className="bookmark__list bookmark__list--active">
               <li className="bookmark__item">
                 <a href="#" className="job-item bookmark__link">
                   <div className="job-item__badge-letter">AS</div>
