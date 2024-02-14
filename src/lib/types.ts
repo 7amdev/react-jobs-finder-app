@@ -6,3 +6,10 @@ export type Job = {
   relevanceScore: number;
   daysAgo: number;
 };
+
+export type Search = {
+  jobs: Job[];
+  query: string;
+  page: number;
+  total: number;
+};

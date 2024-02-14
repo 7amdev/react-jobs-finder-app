@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-type SearchProps = {
-  jobsFetch: (query: string) => void;
+type JobSearchProps = {
+  setQuery: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export default function Search({ jobsFetch }: SearchProps) {
+export default function JobSearch({ setQuery }: JobSearchProps) {
   const [value, setValue] = useState("");
 
   const isActive = value ? true : false;
@@ -16,7 +16,7 @@ export default function Search({ jobsFetch }: SearchProps) {
   useEffect(
     function () {
       const interval = setTimeout(function () {
-        jobsFetch(value);
+        setQuery(value);
       }, 500);
 
       return function () {
@@ -25,7 +25,7 @@ export default function Search({ jobsFetch }: SearchProps) {
     },
     [value]
   );
-  console.log("Rendering search");
+  console.log("Rendering search: ", value);
 
   return (
     <form
