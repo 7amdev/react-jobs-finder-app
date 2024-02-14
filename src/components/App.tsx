@@ -1,9 +1,25 @@
 import { useState } from "react";
 import Search from "./Search";
 import { Job } from "../lib/types";
+import { API_URL } from "../lib/constants";
+import JobList from "./JobList";
 
 export default function App() {
   const [jobs, setJobs] = useState<Job[]>([]);
+
+  const jobsFetch = async function (query: string) {
+    if (!query) return [];
+
+    const response = await fetch(`${API_URL}?q=${query}&_page=1&_limit=3`, {
+      method: "GET",
+    });
+
+    const data: Job[] = await response.json();
+
+    setJobs(data);
+  };
+
+  console.log("App rendering: ", jobs);
 
   return (
     <>
@@ -134,7 +150,7 @@ export default function App() {
             </ul>
           </div>
         </div>
-        <Search setJobs={setJobs} />
+        <Search jobsFetch={jobsFetch} />
       </header>
       <main>
         <section className="jobs">
@@ -190,86 +206,7 @@ export default function App() {
                 ></path>
               </svg>
             </button>
-            <ul className="jobs__list">
-              <li className="jobs__item job-item self-center">
-                <div className="job-item__badge-letter">AS</div>
-                <section className="job-item__info">
-                  <p className="job-item__title">Front-end Developer - React</p>
-                  <p className="job-item__company">AT Security</p>
-                </section>
-                <div className="job-item__col">
-                  <button className="job-item__bookmark">
-                    <svg
-                      className="job-item__icon"
-                      width="15"
-                      height="15"
-                      viewBox="0 0 15 15"
-                      fill="none"
-                    >
-                      <path
-                        d="M3.5 2C3.22386 2 3 2.22386 3 2.5V13.5C3 13.6818 3.09864 13.8492 3.25762 13.9373C3.41659 14.0254 3.61087 14.0203 3.765 13.924L7.5 11.5896L11.235 13.924C11.3891 14.0203 11.5834 14.0254 11.7424 13.9373C11.9014 13.8492 12 13.6818 12 13.5V2.5C12 2.22386 11.7761 2 11.5 2H3.5Z"
-                        fill="currentColor"
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                      ></path>
-                    </svg>
-                  </button>
-                  <p className="job-item__age">4d</p>
-                </div>
-              </li>
-              <li className="jobs__item job-item job-item--active self-center">
-                <div className="job-item__badge-letter">9T</div>
-                <section className="job-item__info">
-                  <p className="job-item__title">Front-end React Engineer</p>
-                  <p className="job-item__company">9th Tech</p>
-                </section>
-                <div className="job-item__col">
-                  <button className="job-item__bookmark">
-                    <svg
-                      className="job-item__icon"
-                      width="15"
-                      height="15"
-                      viewBox="0 0 15 15"
-                      fill="none"
-                    >
-                      <path
-                        d="M3.5 2C3.22386 2 3 2.22386 3 2.5V13.5C3 13.6818 3.09864 13.8492 3.25762 13.9373C3.41659 14.0254 3.61087 14.0203 3.765 13.924L7.5 11.5896L11.235 13.924C11.3891 14.0203 11.5834 14.0254 11.7424 13.9373C11.9014 13.8492 12 13.6818 12 13.5V2.5C12 2.22386 11.7761 2 11.5 2H3.5Z"
-                        fill="currentColor"
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                      ></path>
-                    </svg>
-                  </button>
-                  <p className="job-item__age">2d</p>
-                </div>
-              </li>
-              <li className="jobs__item job-item self-center">
-                <div className="job-item__badge-letter">AT</div>
-                <section className="job-item__info">
-                  <p className="job-item__title">Junior Software devolper</p>
-                  <p className="job-item__company">Aspen Tech</p>
-                </section>
-                <div className="job-item__col">
-                  <button className="job-item__bookmark">
-                    <svg
-                      className="job-item__icon"
-                      width="15"
-                      height="15"
-                      viewBox="0 0 15 15"
-                      fill="none"
-                    >
-                      <path
-                        d="M3.5 2C3.22386 2 3 2.22386 3 2.5V13.5C3 13.6818 3.09864 13.8492 3.25762 13.9373C3.41659 14.0254 3.61087 14.0203 3.765 13.924L7.5 11.5896L11.235 13.924C11.3891 14.0203 11.5834 14.0254 11.7424 13.9373C11.9014 13.8492 12 13.6818 12 13.5V2.5C12 2.22386 11.7761 2 11.5 2H3.5Z"
-                        fill="currentColor"
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                      ></path>
-                    </svg>
-                  </button>
-                  <p className="job-item__age">4d</p>
-                </div>
-              </li>
-            </ul>
+            <JobList jobs={jobs} />
             <button className="jobs__button jobs__next">
               <svg
                 className="jobs__icon"

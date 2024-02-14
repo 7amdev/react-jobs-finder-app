@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { API_URL } from "../lib/constants";
-import { Job } from "../lib/types";
 
 type SearchProps = {
-  setJobs: (jobs: Job[]) => void;
+  jobsFetch: (query: string) => void;
 };
 
-export default function Search({ setJobs }: SearchProps) {
+export default function Search({ jobsFetch }: SearchProps) {
   const [value, setValue] = useState("");
 
   const isActive = value ? true : false;
@@ -15,27 +13,10 @@ export default function Search({ setJobs }: SearchProps) {
     setValue(e.target.value);
   };
 
-  const onSubmitHandler = function (e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-  };
-
   useEffect(
     function () {
       const interval = setTimeout(function () {
-        if (!value) return;
-
-        fetch(`${API_URL}?q=${value}`, {
-          method: "GET",
-        })
-          .then(function (response) {
-            return response.json();
-          })
-          .then(function (data) {
-            setJobs(data);
-          })
-          .catch(function (error) {
-            console.error(error);
-          });
+        jobsFetch(value);
       }, 500);
 
       return function () {
@@ -44,9 +25,14 @@ export default function Search({ setJobs }: SearchProps) {
     },
     [value]
   );
+  console.log("Rendering search");
 
   return (
-    <form className="search-form" action="#" onSubmit={onSubmitHandler}>
+    <form
+      className="search-form"
+      action="#"
+      onSubmit={(e) => e.preventDefault()}
+    >
       <div className="search-form__content">
         <input
           type="text"
