@@ -5,7 +5,7 @@ type JobSearchProps = {
 };
 
 export default function JobSearch({ setQuery }: JobSearchProps) {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState<string>("");
 
   const isActive = value ? true : false;
 
@@ -25,7 +25,6 @@ export default function JobSearch({ setQuery }: JobSearchProps) {
     },
     [value]
   );
-  console.log("Rendering search: ", value);
 
   return (
     <form

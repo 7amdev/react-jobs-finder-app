@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import JobSearch from "./JobSearch";
-import { Job, Search } from "../lib/types";
+import { Job, JobResume, Search } from "../lib/types";
 import { API_URL, PAGE_LIMIT } from "../lib/constants";
 import JobList from "./JobList";
 import Pagination from "./Pagination";
@@ -8,6 +8,8 @@ import Pagination from "./Pagination";
 export default function App() {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [jobId, setJobId] = useState("");
+  const [job, setJob] = useState<Job | undefined>(undefined);
   const [search, setSearch] = useState<Search>({
     jobs: [],
     query: "",
@@ -31,9 +33,9 @@ export default function App() {
 
         setSearch({
           ...search,
-          query: query,
+          query,
           jobs: data,
-          page: page,
+          page,
           total: Number(response.headers.get("X-Total-Count")) || 0,
         });
       };
@@ -43,7 +45,40 @@ export default function App() {
     [query, page]
   );
 
-  console.log("App rendering: ", search, page);
+  useEffect(
+    function () {
+      if (!jobId) return;
+      const fetchJobById = async function () {
+        const response = await fetch(`${API_URL}/${jobId}`);
+        const data = await response.json();
+        setJob(data);
+      };
+      fetchJobById();
+    },
+    [jobId]
+  );
+
+  useEffect(function () {
+    const onHashChangeHandler = function () {
+      const url = new URL(location.hash.slice(1), API_URL);
+      const { searchParams: search } = url;
+      const id = search.get("id");
+
+      if (id) {
+        setJobId(id);
+      }
+      console.log("Job: ", id);
+    };
+
+    window.addEventListener("hashchange", onHashChangeHandler);
+    onHashChangeHandler();
+
+    return function () {
+      window.removeEventListener("hashchange", () => onHashChangeHandler());
+    };
+  }, []);
+
+  console.log("Rendering App: ", job);
 
   return (
     <>
