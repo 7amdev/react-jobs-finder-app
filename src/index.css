@@ -341,6 +341,7 @@ img {
   font-weight: 600;
 }
 .job-item__company {
+  font-size: 14px;
 }
 .job-item__col {
   display: flex;
