@@ -17,14 +17,13 @@ export default function JobSearch({ setRoute }: JobSearchProps) {
   useEffect(
     function () {
       const interval = setTimeout(function () {
-        setRoute(function (prevState: Route) {
-          // prevState.jobs.search.set("q", value);
-          const newState = structuredClone(prevState);
-
-          // newState.jobs.search["q"] = value;
-          // console.log(JSON.stringify(prevState), JSON.stringify(newState));
-          return prevState;
-        });
+        // setRoute(function (prevState: Route) {
+        //   prevState.jobs.search.set("q", value);
+        //   const newState = structuredClone(prevState);
+        //   newState.jobs.search["q"] = value;
+        //   console.log(JSON.stringify(prevState), JSON.stringify(newState));
+        //   return prevState;
+        // });
       }, 500);
 
       return function () {

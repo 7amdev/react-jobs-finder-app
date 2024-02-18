@@ -25,48 +25,45 @@ export default function App() {
 
   const { jobs } = search;
 
-  useEffect(
-    function () {
-      const fetchCall = async function () {
-        const response = await fetch(
-          `${API_URL}?q=${query}&_page=${page}&_limit=${PAGE_LIMIT}`,
-          {
-            method: "GET",
-          }
-        );
+  // useEffect(
+  //   function () {
+  //     const fetchCall = async function () {
+  //       const response = await fetch(
+  //         `${API_URL}?q=${query}&_page=${page}&_limit=${PAGE_LIMIT}`,
+  //         {
+  //           method: "GET",
+  //         }
+  //       );
 
-        const data = await response.json();
+  //       const data = await response.json();
 
-        setSearch({
-          ...search,
-          query,
-          jobs: data,
-          page,
-          total: Number(response.headers.get("X-Total-Count")) || 0,
-        });
-      };
+  //       setSearch({
+  //         ...search,
+  //         query,
+  //         jobs: data,
+  //         page,
+  //         total: Number(response.headers.get("X-Total-Count")) || 0,
+  //       });
+  //     };
 
-      fetchCall();
-    },
-    [query, page]
-  );
+  //     fetchCall();
+  //   },
+  //   [query, page]
+  // );
 
-  useEffect(
-    function () {
-      const { params } = route || {};
-      console.log(params);
+  // useEffect(
+  //   function () {
+  //     const { params } = route || {};
 
-      if (!params || !params.id) return;
-
-      const fetchJobById = async function () {
-        const response = await fetch(`${API_URL}/${params.id}`);
-        const data = await response.json();
-        setJob(data);
-      };
-      fetchJobById();
-    },
-    [route]
-  );
+  //     const fetchJobById = async function () {
+  //       const response = await fetch(`${API_URL}/${params.id}`);
+  //       const data = await response.json();
+  //       setJob(data);
+  //     };
+  //     if (params.jobsId) fetchJobById();
+  //   },
+  //   [route]
+  // );
 
   useEffect(function () {
     const onHashChangeHandler = function () {
@@ -78,16 +75,17 @@ export default function App() {
         routeMatch,
         routeParams;
 
-      for (i = 0; i < ROUTES.length; i++) {
+      for (; i < ROUTES.length; i++) {
         const [_, routeParser] = ROUTES[i];
         routeMatch = routeParser.exec(url.pathname);
+        routeParser.lastIndex = 0;
+        console.log("Match: ", routeMatch, ROUTES[i]);
 
         if (routeMatch) {
           routeMatch.shift();
           break;
         }
       }
-
       if (routeMatch) {
         const [routePath] = ROUTES[i];
         routeParams = [...routePath.matchAll(/(?:\/:([A-Za-z]+))/g)].map(
@@ -100,9 +98,7 @@ export default function App() {
           params[routeParams[j]] = routeMatch[j];
         }
       }
-
-      console.log({ path: url.pathname, params, search });
-      setRoute({ path: url.pathname, params, search });
+      setRoute({ path: url.pathname, params: params, search });
     };
 
     window.addEventListener("hashchange", onHashChangeHandler);
