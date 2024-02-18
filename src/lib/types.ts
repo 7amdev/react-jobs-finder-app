@@ -26,3 +26,19 @@ export type Search = {
   page: number;
   total: number;
 };
+
+export type RouteConfig = [string, RegExp];
+export type Routes = RouteConfig[];
+
+export type RouteProps = {
+  params: { [key: string]: string };
+  search: { [key: string]: string };
+};
+
+export type RouteTypes = "jobs" | "comments";
+export type RouteParams = { [key: string]: string };
+export type Route = {
+  path: string;
+  params: RouteParams;
+  search: { [key: string]: string };
+};

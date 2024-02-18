@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { Route } from "../lib/types";
 
 type JobSearchProps = {
-  setQuery: React.Dispatch<React.SetStateAction<string>>;
+  setRoute: React.Dispatch<React.SetStateAction<Route>>;
 };
 
-export default function JobSearch({ setQuery }: JobSearchProps) {
+export default function JobSearch({ setRoute }: JobSearchProps) {
   const [value, setValue] = useState<string>("");
 
   const isActive = value ? true : false;
@@ -16,7 +17,14 @@ export default function JobSearch({ setQuery }: JobSearchProps) {
   useEffect(
     function () {
       const interval = setTimeout(function () {
-        setQuery(value);
+        setRoute(function (prevState: Route) {
+          // prevState.jobs.search.set("q", value);
+          const newState = structuredClone(prevState);
+
+          // newState.jobs.search["q"] = value;
+          // console.log(JSON.stringify(prevState), JSON.stringify(newState));
+          return prevState;
+        });
       }, 500);
 
       return function () {
