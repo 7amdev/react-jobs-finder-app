@@ -2,15 +2,19 @@ import { JobResume } from "../lib/types";
 
 type JobItemProps = {
   job: JobResume;
-  index: number;
-  selected: string;
+  jobActive: number;
 };
-export default function JobItem({ job, index, selected }: JobItemProps) {
+export default function JobItem({ job, jobActive }: JobItemProps) {
   return (
-    <li key={job.id} className={`jobs__item self-center `}>
+    <li
+      key={job.id}
+      className={`jobs__item self-center ${
+        jobActive === job.id && "job__item--active"
+      }`}
+    >
       <a
         href={`#/jobs/${job.id}`}
-        className={`job-item ${job.id === +selected && "job-item--active"}`}
+        className={`job-item ${job.id === jobActive && "job-item--active"}`}
       >
         <div className="job-item__badge-letter">{job.badgeLetters}</div>
         <section className="job-item__info">

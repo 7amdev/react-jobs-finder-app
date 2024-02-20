@@ -20,6 +20,12 @@ export type JobResume = Pick<
   "id" | "title" | "badgeLetters" | "company" | "daysAgo" | "relevanceScore"
 >;
 
+export type JobQuery = {
+  jobs: Job[];
+  totalCount: number;
+  totalPage: number;
+};
+
 export type Search = {
   jobs: JobResume[];
   query: string;

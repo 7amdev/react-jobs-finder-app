@@ -1,73 +1,102 @@
 import { useEffect, useState } from "react";
 import JobSearch from "./JobSearch";
-import { Job, Route, RouteParams, Search } from "../lib/types";
-import { API_URL, PAGE_LIMIT, ROUTES } from "../lib/constants";
-import JobList from "./JobList";
+import { Job, JobQuery, Route, RouteParams, Search } from "../lib/types";
+import {
+  API_URL,
+  APP_URL,
+  DEFAULT_ROUTE,
+  PAGE_LIMIT,
+  ROUTES,
+} from "../lib/constants";
 import Pagination from "./Pagination";
 import JobDetails from "./JobDetails";
 import BookmarksDropdown from "./BookmarksDropdown";
+import JobList from "./JobList";
 
 export default function App() {
-  const [query, setQuery] = useState("");
-  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState<string | undefined>(undefined);
   const [route, setRoute] = useState<Route>({
     path: "",
     params: {},
     search: {},
   });
-  const [job, setJob] = useState<Job | undefined>(undefined);
-  const [search, setSearch] = useState<Search>({
+  const [jobQuery, setJobQuery] = useState<JobQuery>({
     jobs: [],
-    query: "",
-    page: 1,
-    total: 0,
+    totalCount: 0,
+    totalPage: 0,
   });
 
-  const { jobs } = search;
+  const jobsQuery = async function (
+    query: string,
+    page: string = "1",
+    limit: number = PAGE_LIMIT
+  ): Promise<JobQuery> {
+    const response = await fetch(
+      `${API_URL}?q=${query}&_page=${page}&_limit=${limit}`,
+      {
+        method: "GET",
+      }
+    );
 
-  // useEffect(
-  //   function () {
-  //     const fetchCall = async function () {
-  //       const response = await fetch(
-  //         `${API_URL}?q=${query}&_page=${page}&_limit=${PAGE_LIMIT}`,
-  //         {
-  //           method: "GET",
-  //         }
-  //       );
+    const data = await response.json();
+    const totalCount = Number(response.headers.get("X-Total-Count")) || 0;
+    return {
+      jobs: data,
+      totalCount,
+      totalPage: Math.floor(totalCount / PAGE_LIMIT),
+    };
+  };
 
-  //       const data = await response.json();
+  const jobsGetById = async function (id: number): Promise<Job | undefined> {
+    if (!id) return undefined;
+    const response = await fetch(`${API_URL}/${id}`);
+    const data = await response.json();
+    return data as Job;
+  };
 
-  //       setSearch({
-  //         ...search,
-  //         query,
-  //         jobs: data,
-  //         page,
-  //         total: Number(response.headers.get("X-Total-Count")) || 0,
-  //       });
-  //     };
+  useEffect(
+    function () {
+      if (search === undefined) return;
+      console.log("searching...|", route, "|");
 
-  //     fetchCall();
-  //   },
-  //   [query, page]
-  // );
+      if (!search) {
+        location.href = `/#${route.path}`;
+        return;
+      }
 
-  // useEffect(
-  //   function () {
-  //     const { params } = route || {};
+      const searchParams = new URLSearchParams({
+        q: search,
+        page: "1",
+      });
+      location.href = `/#/jobs?${searchParams.toString()}`;
+    },
+    [search]
+  );
 
-  //     const fetchJobById = async function () {
-  //       const response = await fetch(`${API_URL}/${params.id}`);
-  //       const data = await response.json();
-  //       setJob(data);
-  //     };
-  //     if (params.jobsId) fetchJobById();
-  //   },
-  //   [route]
-  // );
+  useEffect(
+    function () {
+      console.log("Route: ", route);
+
+      if (route.path === "/jobs") {
+        jobsQuery(route.search.q || "").then(function (data) {
+          setJobQuery(data);
+        });
+        console.log("/Jobs");
+      } else if (route.path === "/jobs/32412342141234") {
+        console.log("/jobs/id");
+      }
+    },
+    [route]
+  );
 
   useEffect(function () {
     const onHashChangeHandler = function () {
-      const url = new URL(location.hash.slice(1), API_URL);
+      if (!location.hash) {
+        location.href = DEFAULT_ROUTE;
+        return;
+      }
+
+      const url = new URL(location.hash.slice(1), APP_URL);
       const search = Object.fromEntries(url.searchParams);
       const params: RouteParams = {};
 
@@ -79,13 +108,13 @@ export default function App() {
         const [_, routeParser] = ROUTES[i];
         routeMatch = routeParser.exec(url.pathname);
         routeParser.lastIndex = 0;
-        console.log("Match: ", routeMatch, ROUTES[i]);
 
         if (routeMatch) {
           routeMatch.shift();
           break;
         }
       }
+
       if (routeMatch) {
         const [routePath] = ROUTES[i];
         routeParams = [...routePath.matchAll(/(?:\/:([A-Za-z]+))/g)].map(
@@ -97,19 +126,24 @@ export default function App() {
         for (let j = 0; j < routeParams.length; j++) {
           params[routeParams[j]] = routeMatch[j];
         }
+
+        setRoute({
+          path: url.pathname,
+          params,
+          search,
+        });
+      } else {
+        location.href = DEFAULT_ROUTE;
       }
-      setRoute({ path: url.pathname, params: params, search });
     };
 
     window.addEventListener("hashchange", onHashChangeHandler);
     onHashChangeHandler();
 
     return function () {
-      window.removeEventListener("hashchange", () => onHashChangeHandler());
+      window.removeEventListener("hashchange", onHashChangeHandler);
     };
   }, []);
-
-  console.log("Rendering App: ", route);
 
   return (
     <>
@@ -149,7 +183,7 @@ export default function App() {
             <BookmarksDropdown />
           </div>
         </div>
-        <JobSearch setRoute={setRoute} />
+        <JobSearch route={route} setSearch={setSearch} />
       </header>
       <main>
         <section className="jobs">
@@ -162,7 +196,10 @@ export default function App() {
         <section className="jobs">
           <div className="jobs__header">
             <h1 className="jobs__title">
-              Jobs <span className="fw-400 fs-23px ">(41)</span>
+              Jobs{" "}
+              {jobQuery.totalCount > 0 && (
+                <span className="fw-400 fs-23px ">({jobQuery.totalCount})</span>
+              )}
             </h1>
             <section className="jobs-sort">
               <svg
@@ -188,12 +225,23 @@ export default function App() {
             </section>
           </div>
           <section className="jobs__body">
-            <Pagination setPage={setPage} totalPage={search.total}>
-              <JobList jobs={jobs} selected={route.params.id} />
-            </Pagination>
+            {jobQuery.jobs.length > 0 && (
+              <Pagination totalPage={jobQuery.totalCount}>
+                <JobList jobs={jobQuery.jobs} jobActive={+route.params.jobId} />
+              </Pagination>
+            )}
           </section>
         </section>
-        {job && <JobDetails job={job} />}
+        {route && (
+          <JobDetails
+            // @todo: make jobId: number | undefined and pass as value
+            jobId={
+              +route.params.jobId ||
+              (jobQuery.jobs.length > 0 ? jobQuery.jobs[0].id : 0)
+            }
+            jobsGetById={jobsGetById}
+          />
+        )}
       </main>
     </>
   );

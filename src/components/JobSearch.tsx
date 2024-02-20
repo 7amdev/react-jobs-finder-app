@@ -1,29 +1,35 @@
 import { useEffect, useState } from "react";
-import { Route } from "../lib/types";
+import { Route, Search } from "../lib/types";
 
 type JobSearchProps = {
-  setRoute: React.Dispatch<React.SetStateAction<Route>>;
+  route: Route | undefined;
+  setSearch: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
-export default function JobSearch({ setRoute }: JobSearchProps) {
+export default function JobSearch({ route, setSearch }: JobSearchProps) {
   const [value, setValue] = useState<string>("");
 
   const isActive = value ? true : false;
 
-  const onChangeHandler = function (e: React.ChangeEvent<HTMLInputElement>) {
-    setValue(e.target.value);
+  const onChangeHandler = function (inputValue: string) {
+    setValue(inputValue);
   };
 
   useEffect(
     function () {
+      if (!route || !route.search.q) return;
+      onChangeHandler(route.search.q);
+    },
+    [route]
+  );
+
+  useEffect(
+    function () {
       const interval = setTimeout(function () {
-        // setRoute(function (prevState: Route) {
-        //   prevState.jobs.search.set("q", value);
-        //   const newState = structuredClone(prevState);
-        //   newState.jobs.search["q"] = value;
-        //   console.log(JSON.stringify(prevState), JSON.stringify(newState));
-        //   return prevState;
-        // });
+        if (value === undefined) return;
+        setSearch(function () {
+          return value;
+        });
       }, 500);
 
       return function () {
@@ -47,7 +53,7 @@ export default function JobSearch({ setRoute }: JobSearchProps) {
           }`}
           placeholder="Find remote developer jobs..."
           value={value}
-          onChange={onChangeHandler}
+          onChange={(e) => onChangeHandler(e.target.value)}
           spellCheck={false}
         />
         <button type="submit" className="search-form__button">

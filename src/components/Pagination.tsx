@@ -1,32 +1,33 @@
-import { Search } from "../lib/types";
+import { useState } from "react";
+import { Job, Route, Search } from "../lib/types";
 
 type PaginationProps = {
-  setPage: React.Dispatch<React.SetStateAction<number>>;
   totalPage: number;
   children: React.ReactNode;
 };
 
-export default function Pagination({
-  setPage,
-  totalPage,
-  children,
-}: PaginationProps) {
+export default function Pagination({ totalPage, children }: PaginationProps) {
   const onPreviousPageHandler = function () {
-    setPage(function (previous_value) {
-      const prevPage = previous_value - 1;
-      if (prevPage <= 0) return previous_value;
-
-      return prevPage;
-    });
+    // setRoute(function (previousRoute) {
+    //   if (previousRoute === undefined) return undefined;
+    //   const prevPage = +previousRoute.search.page - 1;
+    //   if (prevPage <= 0) return previousRoute;
+    //   return { ...previousRoute, search: { page: prevPage } };
+    // });
+    // --------
+    // setPage(function (previous_value) {
+    //   const prevPage = previous_value - 1;
+    //   if (prevPage <= 0) return previous_value;
+    //   return prevPage;
+    // });
   };
 
   const onNextPageHandler = function () {
-    setPage(function (previous_value) {
-      const nextPage = previous_value + 1;
-      if (nextPage > totalPage) return previous_value;
-
-      return nextPage;
-    });
+    // setPage(function (previous_value) {
+    //   const nextPage = previous_value + 1;
+    //   if (nextPage > totalPage) return previous_value;
+    //   return nextPage;
+    // });
   };
 
   return (
