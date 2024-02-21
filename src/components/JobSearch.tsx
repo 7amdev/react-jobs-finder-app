@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { Route, Search } from "../lib/types";
 
 type JobSearchProps = {
-  route: Route | undefined;
-  setSearch: React.Dispatch<React.SetStateAction<string | undefined>>;
+  route: Route;
+  routeGoTo: (r: Route) => void;
 };
 
-export default function JobSearch({ route, setSearch }: JobSearchProps) {
+export default function JobSearch({ route, routeGoTo }: JobSearchProps) {
   const [value, setValue] = useState<string>("");
 
   const isActive = value ? true : false;
@@ -26,10 +26,15 @@ export default function JobSearch({ route, setSearch }: JobSearchProps) {
   useEffect(
     function () {
       const interval = setTimeout(function () {
-        if (value === undefined) return;
-        setSearch(function () {
-          return value;
-        });
+        if (!route.path) return;
+        if (value === "") {
+          delete route.search.q;
+          routeGoTo(route);
+          return;
+        }
+
+        route.search.q = value;
+        routeGoTo(route);
       }, 500);
 
       return function () {

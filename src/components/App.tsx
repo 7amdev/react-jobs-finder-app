@@ -14,7 +14,6 @@ import BookmarksDropdown from "./BookmarksDropdown";
 import JobList from "./JobList";
 
 export default function App() {
-  const [search, setSearch] = useState<string | undefined>(undefined);
   const [route, setRoute] = useState<Route>({
     path: "",
     params: {},
@@ -55,7 +54,7 @@ export default function App() {
   };
 
   const routeGoTo = function (r: Route) {
-    let url = r.path;
+    let url = `/#${r.path}`;
     const searchKeys = Object.keys(r.search);
 
     if (searchKeys.length > 0) url += `?`;
@@ -69,25 +68,6 @@ export default function App() {
 
     location.href = url;
   };
-
-  useEffect(
-    function () {
-      if (search === undefined) return;
-      console.log("searching...|", route, "|");
-
-      if (!search) {
-        location.href = `/#${route.path}`;
-        return;
-      }
-
-      const searchParams = new URLSearchParams({
-        q: search,
-        page: "1",
-      });
-      location.href = `/#/jobs?${searchParams.toString()}`;
-    },
-    [search]
-  );
 
   useEffect(
     function () {
@@ -201,7 +181,7 @@ export default function App() {
             <BookmarksDropdown />
           </div>
         </div>
-        <JobSearch route={route} setSearch={setSearch} />
+        <JobSearch route={route} routeGoTo={routeGoTo} />
       </header>
       <main>
         <section className="jobs">
