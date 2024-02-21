@@ -3,31 +3,37 @@ import { Job, Route, Search } from "../lib/types";
 
 type PaginationProps = {
   totalPage: number;
+  route: Route;
+  routeGoTo: (r: Route) => void;
   children: React.ReactNode;
 };
 
-export default function Pagination({ totalPage, children }: PaginationProps) {
+export default function Pagination({
+  totalPage,
+  route,
+  routeGoTo,
+  children,
+}: PaginationProps) {
   const onPreviousPageHandler = function () {
-    // setRoute(function (previousRoute) {
-    //   if (previousRoute === undefined) return undefined;
-    //   const prevPage = +previousRoute.search.page - 1;
-    //   if (prevPage <= 0) return previousRoute;
-    //   return { ...previousRoute, search: { page: prevPage } };
-    // });
-    // --------
-    // setPage(function (previous_value) {
-    //   const prevPage = previous_value - 1;
-    //   if (prevPage <= 0) return previous_value;
-    //   return prevPage;
-    // });
+    let prevPage = +(route.search.page || 1) - 1;
+
+    route.path = "/#/jobs";
+
+    if (prevPage < 1) prevPage = 1;
+    route.search.page = String(prevPage);
+
+    routeGoTo(route);
   };
 
   const onNextPageHandler = function () {
-    // setPage(function (previous_value) {
-    //   const nextPage = previous_value + 1;
-    //   if (nextPage > totalPage) return previous_value;
-    //   return nextPage;
-    // });
+    let nextPage = +(route.search.page || 1) + 1;
+
+    route.path = "/#/jobs";
+
+    if (nextPage > totalPage) nextPage = totalPage;
+    route.search.page = String(nextPage);
+
+    routeGoTo(route);
   };
 
   return (

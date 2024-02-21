@@ -54,6 +54,22 @@ export default function App() {
     return data as Job;
   };
 
+  const routeGoTo = function (r: Route) {
+    let url = r.path;
+    const searchKeys = Object.keys(r.search);
+
+    if (searchKeys.length > 0) url += `?`;
+
+    searchKeys.forEach(function (searchKey, index, arr) {
+      url += `${searchKey}=${r.search[searchKey]}`;
+      if (index < arr.length - 1) {
+        url += `&`;
+      }
+    });
+
+    location.href = url;
+  };
+
   useEffect(
     function () {
       if (search === undefined) return;
@@ -78,7 +94,9 @@ export default function App() {
       console.log("Route: ", route);
 
       if (route.path === "/jobs") {
-        jobsQuery(route.search.q || "").then(function (data) {
+        jobsQuery(route.search.q || "", route.search.page).then(function (
+          data
+        ) {
           setJobQuery(data);
         });
         console.log("/Jobs");
@@ -226,7 +244,11 @@ export default function App() {
           </div>
           <section className="jobs__body">
             {jobQuery.jobs.length > 0 && (
-              <Pagination totalPage={jobQuery.totalCount}>
+              <Pagination
+                totalPage={jobQuery.totalCount}
+                route={route}
+                routeGoTo={routeGoTo}
+              >
                 <JobList jobs={jobQuery.jobs} jobActive={+route.params.jobId} />
               </Pagination>
             )}
