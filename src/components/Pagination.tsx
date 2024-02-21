@@ -17,7 +17,7 @@ export default function Pagination({
   const onPreviousPageHandler = function () {
     let prevPage = +(route.search.page || 1) - 1;
 
-    route.path = "/#/jobs";
+    route.path = "/jobs";
 
     if (prevPage < 1) prevPage = 1;
     route.search.page = String(prevPage);
@@ -28,7 +28,7 @@ export default function Pagination({
   const onNextPageHandler = function () {
     let nextPage = +(route.search.page || 1) + 1;
 
-    route.path = "/#/jobs";
+    route.path = "/jobs";
 
     if (nextPage > totalPage) nextPage = totalPage;
     route.search.page = String(nextPage);
