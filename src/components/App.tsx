@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import JobSearch from "./JobSearch";
-import { Job, JobQuery, Route, RouteParams, Search } from "../lib/types";
+import { Job, JobQuery, Route, RouteCache, RouteParams } from "../lib/types";
 import {
   API_URL,
   APP_URL,
@@ -19,6 +19,7 @@ export default function App() {
     params: {},
     search: {},
   });
+  const [routeCache, setRouteCache] = useState<RouteCache>({});
   const [jobQuery, setJobQuery] = useState<JobQuery>({
     jobs: [],
     totalCount: 0,
@@ -71,7 +72,7 @@ export default function App() {
 
   useEffect(
     function () {
-      console.log("Route: ", route);
+      setRouteCache({ ...routeCache, [route.path]: structuredClone(route) });
 
       if (route.path === "/jobs") {
         jobsQuery(route.search.q || "", route.search.page).then(function (
@@ -227,6 +228,7 @@ export default function App() {
               <Pagination
                 totalPage={jobQuery.totalCount}
                 route={route}
+                routeCache={routeCache}
                 routeGoTo={routeGoTo}
               >
                 <JobList jobs={jobQuery.jobs} jobActive={+route.params.jobId} />

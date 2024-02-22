@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Job, Route, Search } from "../lib/types";
+import { Route, RouteCache } from "../lib/types";
 
 type PaginationProps = {
   totalPage: number;
   route: Route;
+  routeCache: RouteCache;
   routeGoTo: (r: Route) => void;
   children: React.ReactNode;
 };
@@ -11,13 +11,16 @@ type PaginationProps = {
 export default function Pagination({
   totalPage,
   route,
+  routeCache,
   routeGoTo,
   children,
 }: PaginationProps) {
   const onPreviousPageHandler = function () {
+    if (route.path !== "/jobs") {
+      route.search = routeCache["/jobs"].search;
+      route.path = "/jobs";
+    }
     let prevPage = +(route.search.page || 1) - 1;
-
-    route.path = "/jobs";
 
     if (prevPage < 1) prevPage = 1;
     route.search.page = String(prevPage);
@@ -26,9 +29,11 @@ export default function Pagination({
   };
 
   const onNextPageHandler = function () {
+    if (route.path !== "/jobs") {
+      route.search = routeCache["/jobs"].search;
+      route.path = "/jobs";
+    }
     let nextPage = +(route.search.page || 1) + 1;
-
-    route.path = "/jobs";
 
     if (nextPage > totalPage) nextPage = totalPage;
     route.search.page = String(nextPage);

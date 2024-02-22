@@ -48,3 +48,4 @@ export type Route = {
   params: RouteParams;
   search: { [key: string]: string };
 };
+export type RouteCache = { [key: string]: Route };
