@@ -33,6 +33,7 @@ export default function JobSearch({ route, routeGoTo }: JobSearchProps) {
           return;
         }
 
+        route.path = "/jobs";
         route.search.q = value;
         routeGoTo(route);
       }, 500);
