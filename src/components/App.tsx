@@ -182,7 +182,7 @@ export default function App() {
             <BookmarksDropdown />
           </div>
         </div>
-        <JobSearch route={route} routeGoTo={routeGoTo} />
+        <JobSearch key={route.search.q} route={route} routeGoTo={routeGoTo} />
       </header>
       <main>
         <section className="jobs">
@@ -197,7 +197,10 @@ export default function App() {
             <h1 className="jobs__title">
               Jobs{" "}
               {jobQuery.totalCount > 0 && (
-                <span className="fw-400 fs-23px ">({jobQuery.totalCount})</span>
+                <span className="fw-400 fs-23px ">
+                  ({(+route.search.page || 1) * PAGE_LIMIT} of{" "}
+                  {jobQuery.totalCount})
+                </span>
               )}
             </h1>
             <section className="jobs-sort">
@@ -226,7 +229,7 @@ export default function App() {
           <section className="jobs__body">
             {jobQuery.jobs.length > 0 && (
               <Pagination
-                totalPage={jobQuery.totalCount}
+                totalPage={Math.floor(jobQuery.totalCount / PAGE_LIMIT)}
                 route={route}
                 routeCache={routeCache}
                 routeGoTo={routeGoTo}

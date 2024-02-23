@@ -143,13 +143,14 @@ export default function JobDetails({ jobId, jobsGetById }: JobDetailsProps) {
               </div>
               <div className="grow-1 basis-0">
                 <ul className="job-details__tags">
-                  {job.qualifications.map(function (qualification) {
-                    return (
-                      <li key={qualification} className="job-details__tag">
-                        {qualification}
-                      </li>
-                    );
-                  })}
+                  {job.qualifications &&
+                    job.qualifications.map(function (qualification) {
+                      return (
+                        <li key={qualification} className="job-details__tag">
+                          {qualification}
+                        </li>
+                      );
+                    })}
                 </ul>
               </div>
             </section>
@@ -160,13 +161,14 @@ export default function JobDetails({ jobId, jobsGetById }: JobDetailsProps) {
               </div>
               <div className="grow-1 basis-0">
                 <ul className="job-details__quotes">
-                  {job.reviews.map(function (review) {
-                    return (
-                      <li key={review} className="job-details__quote">
-                        {review}
-                      </li>
-                    );
-                  })}
+                  {job.reviews &&
+                    job.reviews.map(function (review) {
+                      return (
+                        <li key={review} className="job-details__quote">
+                          {review}
+                        </li>
+                      );
+                    })}
                 </ul>
               </div>
             </section>

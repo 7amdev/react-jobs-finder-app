@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Route, Search } from "../lib/types";
 
 type JobSearchProps = {
@@ -7,21 +7,14 @@ type JobSearchProps = {
 };
 
 export default function JobSearch({ route, routeGoTo }: JobSearchProps) {
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string>(route.search.q || "");
+  const inputEl = useRef<HTMLInputElement>(null);
 
   const isActive = value ? true : false;
 
   const onChangeHandler = function (inputValue: string) {
     setValue(inputValue);
   };
-
-  useEffect(
-    function () {
-      if (!route || !route.search.q) return;
-      onChangeHandler(route.search.q);
-    },
-    [route]
-  );
 
   useEffect(
     function () {
@@ -45,6 +38,10 @@ export default function JobSearch({ route, routeGoTo }: JobSearchProps) {
     [value]
   );
 
+  useEffect(function () {
+    inputEl.current?.focus();
+  }, []);
+
   return (
     <form
       className="search-form"
@@ -53,6 +50,7 @@ export default function JobSearch({ route, routeGoTo }: JobSearchProps) {
     >
       <div className="search-form__content">
         <input
+          ref={inputEl}
           type="text"
           className={`search-form__input ${
             isActive && "search-form__input--active"
