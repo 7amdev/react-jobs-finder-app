@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import JobSearch from "./JobSearch";
-import { Job, JobQuery, Route, RouteCache, RouteParams } from "../lib/types";
+import {
+  Job,
+  JobQuery,
+  JobsQueryProps,
+  Route,
+  RouteCache,
+  RouteParams,
+} from "../lib/types";
 import {
   API_URL,
   APP_URL,
@@ -12,6 +19,7 @@ import Pagination from "./Pagination";
 import JobDetails from "./JobDetails";
 import BookmarksDropdown from "./BookmarksDropdown";
 import JobList from "./JobList";
+import Sort from "./Sort";
 
 export default function App() {
   const [route, setRoute] = useState<Route>({
@@ -26,13 +34,11 @@ export default function App() {
     totalPage: 0,
   });
 
-  const jobsQuery = async function (
-    query: string,
-    page: string = "1",
-    limit: number = PAGE_LIMIT
-  ): Promise<JobQuery> {
+  const jobsQuery = async function (props: JobsQueryProps): Promise<JobQuery> {
+    const { query, page, limit = PAGE_LIMIT, sortBy } = props;
+    const sort = sortBy === "relevant" ? "relevanceScore" : "daysAgo";
     const response = await fetch(
-      `${API_URL}?q=${query}&_page=${page}&_limit=${limit}`,
+      `${API_URL}?title_like=${query}&_page=${page}&_limit=${limit}&_sort=${sort}`,
       {
         method: "GET",
       }
@@ -40,6 +46,7 @@ export default function App() {
 
     const data = await response.json();
     const totalCount = Number(response.headers.get("X-Total-Count")) || 0;
+
     return {
       jobs: data,
       totalCount,
@@ -75,9 +82,12 @@ export default function App() {
       setRouteCache({ ...routeCache, [route.path]: structuredClone(route) });
 
       if (route.path === "/jobs") {
-        jobsQuery(route.search.q || "", route.search.page).then(function (
-          data
-        ) {
+        // jobsQuery(route.search.q || "", route.search.page).then(function (
+        jobsQuery({
+          query: route.search.q || "",
+          page: route.search.page,
+          sortBy: route.search.sort,
+        }).then(function (data) {
           setJobQuery(data);
         });
         console.log("/Jobs");
@@ -203,28 +213,7 @@ export default function App() {
                 </span>
               )}
             </h1>
-            <section className="jobs-sort">
-              <svg
-                className="jobs-sort__icon"
-                width="15"
-                height="15"
-                viewBox="0 0 15 15"
-                fill="none"
-              >
-                <path
-                  d="M4.93179 5.43179C4.75605 5.60753 4.75605 5.89245 4.93179 6.06819C5.10753 6.24392 5.39245 6.24392 5.56819 6.06819L7.49999 4.13638L9.43179 6.06819C9.60753 6.24392 9.89245 6.24392 10.0682 6.06819C10.2439 5.89245 10.2439 5.60753 10.0682 5.43179L7.81819 3.18179C7.73379 3.0974 7.61933 3.04999 7.49999 3.04999C7.38064 3.04999 7.26618 3.0974 7.18179 3.18179L4.93179 5.43179ZM10.0682 9.56819C10.2439 9.39245 10.2439 9.10753 10.0682 8.93179C9.89245 8.75606 9.60753 8.75606 9.43179 8.93179L7.49999 10.8636L5.56819 8.93179C5.39245 8.75606 5.10753 8.75606 4.93179 8.93179C4.75605 9.10753 4.75605 9.39245 4.93179 9.56819L7.18179 11.8182C7.35753 11.9939 7.64245 11.9939 7.81819 11.8182L10.0682 9.56819Z"
-                  fill="currentColor"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-              <button className="jobs-sort__button jobs-sort__button--relevant">
-                Relevant
-              </button>
-              <button className="jobs-sort__button jobs-sort__button--recent">
-                Recent
-              </button>
-            </section>
+            <Sort route={route} routeGoTo={routeGoTo} />
           </div>
           <section className="jobs__body">
             {jobQuery.jobs.length > 0 && (

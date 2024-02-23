@@ -279,13 +279,17 @@ img {
   font-size: 13px;
   font-weight: 500;
   color: hsl(0, 0%, 19%);
+  background-color: hsl(0, 0%, 97%);
   padding: 7px 14px;
-  background-color: hsl(0, 0%, 92%);
   border-radius: 3px;
   text-transform: uppercase;
 }
 .jobs-sort__button:hover,
 .jobs-sort__button:focus {
+  color: hsl(0, 0%, 90%);
+  background-color: hsl(0, 0%, 27%);
+}
+.jobs-sort__button--active {
   color: hsl(0, 0%, 92%);
   background-color: hsl(0, 0%, 20%);
 }

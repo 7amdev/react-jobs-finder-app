@@ -49,3 +49,10 @@ export type Route = {
   search: { [key: string]: string };
 };
 export type RouteCache = { [key: string]: Route };
+
+export type JobsQueryProps = {
+  query: string;
+  page?: string;
+  limit?: number;
+  sortBy?: string;
+};
