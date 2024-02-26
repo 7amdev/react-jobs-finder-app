@@ -77,12 +77,36 @@ export default function App() {
     location.href = url;
   };
 
+  const routeAppendQuery = function (key: string, value: string): string {
+    let url = `/#${route.path}`;
+    const searchKeys = Object.keys(route.search);
+
+    url += `?`;
+
+    searchKeys.forEach(function (searchKey, index, arr) {
+      if (key === searchKey) {
+        return;
+      }
+
+      url += `${searchKey}=${route.search[searchKey]}`;
+
+      if (index < arr.length - 1) {
+        url += `&`;
+      }
+    });
+
+    if (searchKeys.length > 0) url += `&`;
+
+    url += `${key}=${value}`;
+
+    return url;
+  };
+
   useEffect(
     function () {
       setRouteCache({ ...routeCache, [route.path]: structuredClone(route) });
 
       if (route.path === "/jobs") {
-        // jobsQuery(route.search.q || "", route.search.page).then(function (
         jobsQuery({
           query: route.search.q || "",
           page: route.search.page,
@@ -223,7 +247,11 @@ export default function App() {
                 routeCache={routeCache}
                 routeGoTo={routeGoTo}
               >
-                <JobList jobs={jobQuery.jobs} jobActive={+route.params.jobId} />
+                <JobList
+                  jobs={jobQuery.jobs}
+                  jobActive={+route.params.jobId || +route.search.select}
+                  routeAppendQuery={routeAppendQuery}
+                />
               </Pagination>
             )}
           </section>
@@ -233,6 +261,7 @@ export default function App() {
             // @todo: make jobId: number | undefined and pass as value
             jobId={
               +route.params.jobId ||
+              +route.search.select ||
               (jobQuery.jobs.length > 0 ? jobQuery.jobs[0].id : 0)
             }
             jobsGetById={jobsGetById}

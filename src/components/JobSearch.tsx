@@ -20,6 +20,10 @@ export default function JobSearch({ route, routeGoTo }: JobSearchProps) {
     function () {
       const interval = setTimeout(function () {
         if (!route.path) return;
+
+        delete route.search.select;
+        delete route.search.page;
+
         if (value === "") {
           delete route.search.q;
           routeGoTo(route);
@@ -28,6 +32,7 @@ export default function JobSearch({ route, routeGoTo }: JobSearchProps) {
 
         route.path = "/jobs";
         route.search.q = value;
+
         routeGoTo(route);
       }, 500);
 

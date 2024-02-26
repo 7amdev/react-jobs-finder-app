@@ -24,6 +24,7 @@ export default function Pagination({
 
     if (prevPage < 1) prevPage = 1;
     route.search.page = String(prevPage);
+    delete route.search.select;
 
     routeGoTo(route);
   };
@@ -37,6 +38,7 @@ export default function Pagination({
 
     if (nextPage > totalPage) nextPage = totalPage;
     route.search.page = String(nextPage);
+    delete route.search.select;
 
     routeGoTo(route);
   };

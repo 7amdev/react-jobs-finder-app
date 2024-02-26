@@ -39,7 +39,6 @@ export default function Sort({ route, routeGoTo }: SortProps) {
         className={`jobs-sort__button jobs-sort__button--recent ${
           route.search.sort === "recent" ? "jobs-sort__button--active" : ""
         }`}
-        // className="jobs-sort__button jobs-sort__button--recent"
         onClick={(e) => {
           e.currentTarget.blur();
           route.search.sort = "recent";

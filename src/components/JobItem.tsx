@@ -1,10 +1,17 @@
-import { JobResume } from "../lib/types";
+import { JobResume, Route } from "../lib/types";
 
 type JobItemProps = {
   job: JobResume;
   jobActive: number;
+  routeAppendQuery: (key: string, value: string) => string;
 };
-export default function JobItem({ job, jobActive }: JobItemProps) {
+export default function JobItem({
+  job,
+  jobActive,
+  routeAppendQuery,
+}: JobItemProps) {
+  const url = routeAppendQuery("select", "" + job.id);
+
   return (
     <li
       key={job.id}
@@ -13,7 +20,7 @@ export default function JobItem({ job, jobActive }: JobItemProps) {
       }`}
     >
       <a
-        href={`#/jobs/${job.id}`}
+        href={`${url}`}
         className={`job-item ${job.id === jobActive && "job-item--active"}`}
       >
         <div className="job-item__badge-letter">{job.badgeLetters}</div>
