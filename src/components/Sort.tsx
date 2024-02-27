@@ -30,6 +30,7 @@ export default function Sort({ route, routeGoTo }: SortProps) {
           e.currentTarget.blur();
 
           route.search.sort = "relevant";
+          delete route.search.select;
           routeGoTo(route);
         }}
       >
@@ -42,6 +43,7 @@ export default function Sort({ route, routeGoTo }: SortProps) {
         onClick={(e) => {
           e.currentTarget.blur();
           route.search.sort = "recent";
+          delete route.search.select;
           routeGoTo(route);
         }}
       >
