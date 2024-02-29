@@ -14,6 +14,12 @@ npm install
 npm run dev
 ```
 
+3. Run API server
+
+```sh
+npx json-server db.json
+```
+
 ## Features
 
 ## Branches
