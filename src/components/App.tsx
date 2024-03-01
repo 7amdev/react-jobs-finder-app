@@ -3,6 +3,7 @@ import JobSearch from "./JobSearch";
 import {
   Job,
   JobQuery,
+  JobResume,
   JobsQueryProps,
   Route,
   RouteCache,
@@ -20,6 +21,7 @@ import JobDetails from "./JobDetails";
 import BookmarksDropdown from "./BookmarksDropdown";
 import JobList from "./JobList";
 import Sort from "./Sort";
+import Bookmarks from "./Bookmarks";
 
 export default function App() {
   const [route, setRoute] = useState<Route>({
@@ -31,11 +33,11 @@ export default function App() {
   const [jobQuery, setJobQuery] = useState<JobQuery>({
     jobs: [],
     totalCount: 0,
-    totalPage: 0,
   });
+  const [bookmarks, setBookmarks] = useState<JobResume[]>([]);
 
   const jobsQuery = async function (props: JobsQueryProps): Promise<JobQuery> {
-    const { query, page, limit = PAGE_LIMIT, sortBy } = props;
+    const { query, page = 1, limit = PAGE_LIMIT, sortBy } = props;
     const sort = sortBy === "relevant" ? "relevanceScore" : "daysAgo";
     const response = await fetch(
       `${API_URL}?title_like=${query}&_page=${page}&_limit=${limit}&_sort=${sort}`,
@@ -50,7 +52,6 @@ export default function App() {
     return {
       jobs: data,
       totalCount,
-      totalPage: Math.floor(totalCount / PAGE_LIMIT),
     };
   };
 
@@ -77,9 +78,11 @@ export default function App() {
     location.href = url;
   };
 
-  const routeAppendQuery = function (key: string, value: string): string {
+  const routeSearchAppend = function (key: string, value: string): string {
     let url = `/#${route.path}`;
     const searchKeys = Object.keys(route.search);
+
+    if (!key || !value) return url;
 
     url += `?`;
 
@@ -105,7 +108,9 @@ export default function App() {
   useEffect(
     function () {
       setRouteCache({ ...routeCache, [route.path]: structuredClone(route) });
-
+      // TODO add new property on the route that describes route
+      //      in a general way: instead of '/jobs/32412342...' it should be
+      //      'if (route.name === jobsFilterById) {....}'
       if (route.path === "/jobs") {
         jobsQuery({
           query: route.search.q || "",
@@ -114,9 +119,12 @@ export default function App() {
         }).then(function (data) {
           setJobQuery(data);
         });
-        console.log("/Jobs");
       } else if (route.path === "/jobs/32412342141234") {
         console.log("/jobs/id");
+      } else if (route.path === "/bookmarks") {
+        // TODO: clear any state not relevant to this route
+        console.log("bookmarks");
+        setJobQuery({ jobs: [], totalCount: 0 });
       }
     },
     [route]
@@ -219,30 +227,50 @@ export default function App() {
         <JobSearch key={route.search.q} route={route} routeGoTo={routeGoTo} />
       </header>
       <main>
+        <Bookmarks bookmarks={bookmarks} routePath={route.path}>
+          <Pagination
+            itemsTotal={bookmarks.length}
+            itemsPerPage={PAGE_LIMIT}
+            route={route}
+            routeCache={routeCache}
+            routeGoTo={routeGoTo}
+          >
+            <JobList
+              jobs={bookmarks}
+              jobActive={+route.params.jobId || +route.search.select}
+              bookmarks={bookmarks}
+              itemsTotal={bookmarks.length}
+              itemsPerPage={PAGE_LIMIT}
+              itemsSelectFirst={false}
+              routeSearchAppend={routeSearchAppend}
+              setBookmarks={setBookmarks}
+            />
+          </Pagination>
+        </Bookmarks>
         <section className="jobs">
           <div className="jobs__header">
-            <h1 className="jobs__title">
-              Bookmarks <span className="fw-400 fs-23px ">(5)</span>
-            </h1>
-          </div>
-        </section>
-        <section className="jobs">
-          <div className="jobs__header">
-            <h1 className="jobs__title">
-              Jobs{" "}
-              {jobQuery.totalCount > 0 && (
-                <span className="fw-400 fs-23px ">
-                  ({(+route.search.page || 1) * PAGE_LIMIT} of{" "}
-                  {jobQuery.totalCount})
-                </span>
-              )}
-            </h1>
+            <a href="#/jobs" className="jobs__link">
+              <h1
+                className={`jobs__title ${
+                  route.path === "/jobs" ? "jobs__title--active" : ""
+                }`}
+              >
+                Jobs{" "}
+                {jobQuery.totalCount > 0 && (
+                  <span className="fw-400 fs-23px ">
+                    ({(+route.search.page || 1) * PAGE_LIMIT} of{" "}
+                    {jobQuery.totalCount})
+                  </span>
+                )}
+              </h1>
+            </a>
             <Sort route={route} routeGoTo={routeGoTo} />
           </div>
           <section className="jobs__body">
             {jobQuery.jobs.length > 0 && (
               <Pagination
-                totalPage={Math.floor(jobQuery.totalCount / PAGE_LIMIT)}
+                itemsTotal={jobQuery.totalCount}
+                itemsPerPage={PAGE_LIMIT}
                 route={route}
                 routeCache={routeCache}
                 routeGoTo={routeGoTo}
@@ -250,7 +278,12 @@ export default function App() {
                 <JobList
                   jobs={jobQuery.jobs}
                   jobActive={+route.params.jobId || +route.search.select}
-                  routeAppendQuery={routeAppendQuery}
+                  bookmarks={bookmarks}
+                  itemsTotal={jobQuery.totalCount}
+                  itemsPerPage={PAGE_LIMIT}
+                  itemsSelectFirst={true}
+                  routeSearchAppend={routeSearchAppend}
+                  setBookmarks={setBookmarks}
                 />
               </Pagination>
             )}

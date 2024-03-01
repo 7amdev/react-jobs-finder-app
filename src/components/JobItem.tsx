@@ -1,16 +1,41 @@
-import { JobResume, Route } from "../lib/types";
+import { Job, JobResume, Route } from "../lib/types";
 
 type JobItemProps = {
   job: JobResume;
   jobActive: number;
-  routeAppendQuery: (key: string, value: string) => string;
+  bookmarks: JobResume[];
+  routeSearchAppend: (key: string, value: string) => string;
+  setBookmarks: React.Dispatch<React.SetStateAction<JobResume[]>>;
 };
 export default function JobItem({
   job,
   jobActive,
-  routeAppendQuery,
+  bookmarks,
+  routeSearchAppend,
+  setBookmarks,
 }: JobItemProps) {
-  const url = routeAppendQuery("select", "" + job.id);
+  let url;
+
+  if (job.id) url = routeSearchAppend("select", "" + job.id);
+  else url = routeSearchAppend("", "");
+
+  const isBookmarked = bookmarks.find(function (bookmark) {
+    return bookmark.id === job.id;
+  });
+
+  const onBookmarkHandler = function () {
+    setBookmarks(function (previousValue) {
+      const index = previousValue.findIndex(function (item) {
+        return item.id === job.id;
+      });
+
+      if (index === -1) return [...previousValue, job];
+
+      return previousValue.filter(function (_, idx) {
+        return index !== idx;
+      });
+    });
+  };
 
   return (
     <li
@@ -29,7 +54,18 @@ export default function JobItem({
           <p className="job-item__company">{job.company}</p>
         </section>
         <div className="job-item__col">
-          <button className="job-item__bookmark">
+          <button
+            className={`job-item__bookmark ${
+              isBookmarked ? "job-item__bookmark--active" : ""
+            }`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              e.currentTarget.blur();
+
+              onBookmarkHandler();
+            }}
+          >
             <svg
               className="job-item__icon"
               width="15"

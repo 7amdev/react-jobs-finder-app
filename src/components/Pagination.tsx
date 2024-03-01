@@ -1,7 +1,8 @@
 import { Route, RouteCache } from "../lib/types";
 
 type PaginationProps = {
-  totalPage: number;
+  itemsTotal: number;
+  itemsPerPage: number;
   route: Route;
   routeCache: RouteCache;
   routeGoTo: (r: Route) => void;
@@ -9,12 +10,18 @@ type PaginationProps = {
 };
 
 export default function Pagination({
-  totalPage,
+  itemsTotal,
+  itemsPerPage,
   route,
   routeCache,
   routeGoTo,
   children,
 }: PaginationProps) {
+  let totalPage: number = Math.floor(itemsTotal / itemsPerPage);
+  const currentPage: number = +route.search.page || 1;
+
+  if (itemsTotal % itemsPerPage > 0) totalPage += 1;
+
   const onPreviousPageHandler = function () {
     if (route.path !== "/jobs") {
       route.search = routeCache["/jobs"].search;
@@ -45,9 +52,12 @@ export default function Pagination({
 
   return (
     <>
+      {/* {currentPage > 1 && ( */}
       <button
         onClick={() => onPreviousPageHandler()}
-        className="jobs__button jobs__button--previous"
+        className={`jobs__button jobs__button--previous ${
+          currentPage > 1 ? "visible" : "invisible"
+        } `}
       >
         <svg
           className="jobs__icon"
@@ -55,7 +65,6 @@ export default function Pagination({
           height="15"
           viewBox="0 0 15 15"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
         >
           <path
             d="M8.84182 3.13514C9.04327 3.32401 9.05348 3.64042 8.86462 3.84188L5.43521 7.49991L8.86462 11.1579C9.05348 11.3594 9.04327 11.6758 8.84182 11.8647C8.64036 12.0535 8.32394 12.0433 8.13508 11.8419L4.38508 7.84188C4.20477 7.64955 4.20477 7.35027 4.38508 7.15794L8.13508 3.15794C8.32394 2.95648 8.64036 2.94628 8.84182 3.13514Z"
@@ -65,12 +74,16 @@ export default function Pagination({
           ></path>
         </svg>
       </button>
+      {/* )} */}
 
       {children}
 
+      {/* {currentPage < totalPage && ( */}
       <button
         onClick={() => onNextPageHandler()}
-        className="jobs__button jobs__next"
+        className={`jobs__button jobs__next ${
+          currentPage < totalPage ? "visible" : "invisible"
+        } `}
       >
         <svg
           className="jobs__icon"
@@ -87,6 +100,7 @@ export default function Pagination({
           ></path>
         </svg>
       </button>
+      {/* )} */}
     </>
   );
 }

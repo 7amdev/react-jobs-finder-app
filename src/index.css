@@ -115,7 +115,17 @@ img {
 .mt-12px {
   margin-top: 12px;
 }
+.mi-auto {
+  margin-inline: auto;
+}
 
+.invisible {
+  visibility: hidden;
+}
+
+.visible {
+  visibility: visible;
+}
 .header {
   display: flex;
   flex-direction: column;
@@ -238,7 +248,20 @@ img {
   align-items: center;
   justify-content: space-between;
 }
+.jobs__link {
+}
+.jobs__link:hover > .jobs__title,
+.jobs__link:focus {
+  color: hsl(0, 0%, 5%);
+}
 .jobs__title {
+  color: hsl(0, 0%, 50%);
+}
+.jobs__title--active {
+  color: hsl(0, 0%, 10%);
+}
+.jobs__title--active > span {
+  color: hsl(0, 0%, 30%);
 }
 .jobs__body {
   display: flex;
@@ -262,7 +285,7 @@ img {
 .jobs__list {
   display: flex;
   gap: 15px;
-  margin-inline: auto;
+  /* margin-inline: auto; */
 }
 .jobs__item {
 }
@@ -312,10 +335,10 @@ img {
 .job-item:focus {
   box-shadow: 0 -3px 1px -1px hsl(0, 0%, 80%);
 }
-.job-item:hover .job-item__title,
+/* .job-item:hover .job-item__title,
 .job-item:focus .job-item__title {
   text-decoration: underline;
-}
+} */
 .job-item--active {
   box-shadow: 0 -3px 1px -1px hsl(0, 0%, 80%);
   border-bottom-left-radius: 0;
@@ -355,10 +378,19 @@ img {
 }
 .job-item__bookmark {
 }
+.job-item__bookmark:hover > .job-item__icon,
+.job-item__bookmark:focus > .job-item__icon {
+  color: hsl(270, 40%, 69%);
+  transform: scale(1.2);
+}
+.job-item__bookmark--active > .job-item__icon {
+  color: hsl(270, 50%, 69%);
+}
 .job-item__icon {
   width: 20px;
   height: 20px;
   color: hsl(0, 0%, 60%);
+  transition: all 0.2s;
 }
 .job-item__age {
   font-size: 14px;

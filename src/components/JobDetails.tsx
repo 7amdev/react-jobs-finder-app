@@ -9,6 +9,7 @@ type JobDetailsProps = {
 export default function JobDetails({ jobId, jobsGetById }: JobDetailsProps) {
   const [job, setJob] = useState<Job>();
 
+  // TODO test if useEffect '[jobId]' i necessary
   useEffect(
     function () {
       jobsGetById(jobId).then(function (data) {

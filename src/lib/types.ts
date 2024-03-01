@@ -23,7 +23,6 @@ export type JobResume = Pick<
 export type JobQuery = {
   jobs: Job[];
   totalCount: number;
-  totalPage: number;
 };
 
 export type Search = {

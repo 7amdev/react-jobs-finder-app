@@ -9,4 +9,6 @@ export const ROUTES: Routes = [
   ["/jobs", /^\/jobs$/g],
   ["/jobs/:jobId", /^\/jobs\/(\d+)$/g],
   ["/jobs/:jobId/comments/:commentId", /^\/jobs\/(\d+)\/comments\/(\d+)$/g],
+  ["/bookmarks", /^\/bookmarks$/g],
+  ["/bookmarks/:jobId", /^\/bookmarks\/(\d+)$/g],
 ];
