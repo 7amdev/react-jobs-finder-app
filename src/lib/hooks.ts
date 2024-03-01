@@ -15,6 +15,7 @@ export function useJobs(props: JobsQueryProps) {
     totalCount: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const { query, page = 1, limit = PAGE_LIMIT, sortBy } = props;
   const sort = sortBy === "relevant" ? "relevanceScore" : "daysAgo";
@@ -42,9 +43,10 @@ export function useJobs(props: JobsQueryProps) {
       })
       .catch((error) => {
         setIsLoading(false);
+        setError(error.message);
         console.error(error);
       });
   }, []);
 
-  return { jobQuery: jobs, isLoading };
+  return { jobQuery: jobs, isLoading, error };
 }
