@@ -21,7 +21,6 @@ import JobDetails from "./JobDetails";
 import BookmarksDropdown from "./BookmarksDropdown";
 import JobList from "./JobList";
 import Sort from "./Sort";
-import Bookmarks from "./Bookmarks";
 
 export default function App() {
   const [route, setRoute] = useState<Route>({
@@ -105,6 +104,25 @@ export default function App() {
     return url;
   };
 
+  const bookmarksGet = function (): JobResume[] {
+    const page = +route.search.page || 1;
+    const end = page * PAGE_LIMIT;
+    const start = end - PAGE_LIMIT;
+
+    return bookmarks.slice(start, end);
+  };
+
+  const jobIdAppCheck = function (): number {
+    if (+route.params.jobId) return +route.params.jobId;
+    if (+route.search.select) return +route.search.select;
+    if (route.path === "/jobs" && jobQuery.jobs.length > 0)
+      return jobQuery.jobs[0].id;
+    if (route.path === "/bookmarks" && bookmarks.length > 0)
+      return bookmarks[0].id;
+
+    return -1;
+  };
+
   useEffect(
     function () {
       setRouteCache({ ...routeCache, [route.path]: structuredClone(route) });
@@ -124,7 +142,7 @@ export default function App() {
       } else if (route.path === "/bookmarks") {
         // TODO: clear any state not relevant to this route
         console.log("bookmarks");
-        setJobQuery({ jobs: [], totalCount: 0 });
+        // setJobQuery({ jobs: [], totalCount: 0 });
       }
     },
     [route]
@@ -227,7 +245,7 @@ export default function App() {
         <JobSearch key={route.search.q} route={route} routeGoTo={routeGoTo} />
       </header>
       <main>
-        <Bookmarks bookmarks={bookmarks} routePath={route.path}>
+        {/* <Bookmarks bookmarks={bookmarks} routePath={route.path}>
           <Pagination
             itemsTotal={bookmarks.length}
             itemsPerPage={PAGE_LIMIT}
@@ -246,7 +264,7 @@ export default function App() {
               setBookmarks={setBookmarks}
             />
           </Pagination>
-        </Bookmarks>
+        </Bookmarks> */}
         <section className="jobs">
           <div className="jobs__header">
             <a href="#/jobs" className="jobs__link">
@@ -264,41 +282,49 @@ export default function App() {
                 )}
               </h1>
             </a>
+            <a href="#/bookmarks" className="jobs__link">
+              <h1
+                className={`jobs__title ${
+                  route.path === "/bookmarks" ? "jobs__title--active" : ""
+                }`}
+              >
+                Bookmarks{" "}
+                <span className="fw-400 fs-23px ">({bookmarks.length})</span>
+              </h1>
+            </a>
             <Sort route={route} routeGoTo={routeGoTo} />
           </div>
           <section className="jobs__body">
-            {jobQuery.jobs.length > 0 && (
-              <Pagination
-                itemsTotal={jobQuery.totalCount}
+            {/* {(jobQuery.jobs.length > 0 || bookmarks.length > 0) && ( */}
+            <Pagination
+              itemsTotal={
+                route.path === "/jobs" ? jobQuery.totalCount : bookmarks.length
+              }
+              itemsPerPage={PAGE_LIMIT}
+              route={route}
+              routeCache={routeCache}
+              routeGoTo={routeGoTo}
+            >
+              <JobList
+                jobs={route.path === "/jobs" ? jobQuery.jobs : bookmarksGet()}
+                jobActive={+route.params.jobId || +route.search.select}
+                bookmarks={bookmarks}
+                itemsTotal={
+                  route.path === "/jobs"
+                    ? jobQuery.totalCount
+                    : bookmarks.length
+                }
                 itemsPerPage={PAGE_LIMIT}
-                route={route}
-                routeCache={routeCache}
-                routeGoTo={routeGoTo}
-              >
-                <JobList
-                  jobs={jobQuery.jobs}
-                  jobActive={+route.params.jobId || +route.search.select}
-                  bookmarks={bookmarks}
-                  itemsTotal={jobQuery.totalCount}
-                  itemsPerPage={PAGE_LIMIT}
-                  itemsSelectFirst={true}
-                  routeSearchAppend={routeSearchAppend}
-                  setBookmarks={setBookmarks}
-                />
-              </Pagination>
-            )}
+                itemsSelectFirst={true}
+                routeSearchAppend={routeSearchAppend}
+                setBookmarks={setBookmarks}
+              />
+            </Pagination>
+            {/* )} */}
           </section>
         </section>
         {route && (
-          <JobDetails
-            // @todo: make jobId: number | undefined and pass as value
-            jobId={
-              +route.params.jobId ||
-              +route.search.select ||
-              (jobQuery.jobs.length > 0 ? jobQuery.jobs[0].id : 0)
-            }
-            jobsGetById={jobsGetById}
-          />
+          <JobDetails jobId={jobIdAppCheck()} jobsGetById={jobsGetById} />
         )}
       </main>
     </>

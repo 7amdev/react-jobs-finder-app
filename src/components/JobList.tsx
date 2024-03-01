@@ -1,3 +1,4 @@
+import { PAGE_LIMIT } from "../lib/constants";
 import { Job, JobResume } from "../lib/types";
 import JobItem from "./JobItem";
 
@@ -22,22 +23,24 @@ export default function JobList({
   routeSearchAppend,
   setBookmarks,
 }: JobListProps) {
+  let jobActiveId: number = -1;
   let jobFound = jobs.find(function (job) {
     return job.id === +jobActive;
   });
-  let jobActiveId: number = -1;
 
   if (jobFound) {
     jobActiveId = jobFound.id;
   } else {
     if (!jobFound && itemsSelectFirst) {
-      jobActiveId = jobs[0].id;
+      if (jobs.length > 0) {
+        jobActiveId = jobs[0].id;
+      }
     }
   }
 
   return (
     <ul className={`jobs__list ${itemsTotal > itemsPerPage ? "mi-auto" : ""}`}>
-      {jobs.map(function (job: JobResume) {
+      {jobs.slice(0, PAGE_LIMIT).map(function (job: JobResume) {
         return (
           <JobItem
             key={job.id}

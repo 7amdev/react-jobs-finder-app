@@ -23,10 +23,10 @@ export default function Pagination({
   if (itemsTotal % itemsPerPage > 0) totalPage += 1;
 
   const onPreviousPageHandler = function () {
-    if (route.path !== "/jobs") {
-      route.search = routeCache["/jobs"].search;
-      route.path = "/jobs";
-    }
+    // if (route.path !== "/jobs") {
+    //   route.search = routeCache["/jobs"].search;
+    //   route.path = "/jobs";
+    // }
     let prevPage = +(route.search.page || 1) - 1;
 
     if (prevPage < 1) prevPage = 1;
@@ -37,10 +37,10 @@ export default function Pagination({
   };
 
   const onNextPageHandler = function () {
-    if (route.path !== "/jobs") {
-      route.search = routeCache["/jobs"].search;
-      route.path = "/jobs";
-    }
+    // if (route.path !== "/jobs") {
+    //   route.search = routeCache["/jobs"].search;
+    //   route.path = "/jobs";
+    // }
     let nextPage = +(route.search.page || 1) + 1;
 
     if (nextPage > totalPage) nextPage = totalPage;

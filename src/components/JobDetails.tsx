@@ -12,6 +12,10 @@ export default function JobDetails({ jobId, jobsGetById }: JobDetailsProps) {
   // TODO test if useEffect '[jobId]' i necessary
   useEffect(
     function () {
+      if (jobId === -1) {
+        setJob(undefined);
+        return;
+      }
       jobsGetById(jobId).then(function (data) {
         setJob(data);
       });
