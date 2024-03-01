@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 import JobSearch from "./JobSearch";
-import {
-  Job,
-  JobQuery,
-  JobResume,
-  JobsQueryProps,
-  Route,
-  RouteCache,
-  RouteParams,
-} from "../lib/types";
+import { Job, JobResume, Route, RouteParams } from "../lib/types";
 import {
   API_URL,
   APP_URL,
@@ -21,6 +13,7 @@ import JobDetails from "./JobDetails";
 import BookmarksDropdown from "./BookmarksDropdown";
 import JobList from "./JobList";
 import Sort from "./Sort";
+import { useJobs } from "../lib/hooks";
 
 export default function App() {
   const [route, setRoute] = useState<Route>({
@@ -28,31 +21,13 @@ export default function App() {
     params: {},
     search: {},
   });
-  const [routeCache, setRouteCache] = useState<RouteCache>({});
-  const [jobQuery, setJobQuery] = useState<JobQuery>({
-    jobs: [],
-    totalCount: 0,
+  const { jobQuery, isLoading } = useJobs({
+    query: route.search.query,
+    limit: +route.search.limit,
+    page: route.search.page,
+    sortBy: route.search.sortBy,
   });
   const [bookmarks, setBookmarks] = useState<JobResume[]>([]);
-
-  const jobsQuery = async function (props: JobsQueryProps): Promise<JobQuery> {
-    const { query, page = 1, limit = PAGE_LIMIT, sortBy } = props;
-    const sort = sortBy === "relevant" ? "relevanceScore" : "daysAgo";
-    const response = await fetch(
-      `${API_URL}?title_like=${query}&_page=${page}&_limit=${limit}&_sort=${sort}`,
-      {
-        method: "GET",
-      }
-    );
-
-    const data = await response.json();
-    const totalCount = Number(response.headers.get("X-Total-Count")) || 0;
-
-    return {
-      jobs: data,
-      totalCount,
-    };
-  };
 
   const jobsGetById = async function (id: number): Promise<Job | undefined> {
     if (!id) return undefined;
@@ -113,6 +88,8 @@ export default function App() {
   };
 
   const jobIdAppCheck = function (): number {
+    console.log("JOB", jobQuery);
+
     if (+route.params.jobId) return +route.params.jobId;
     if (+route.search.select) return +route.search.select;
     if (route.path === "/jobs" && jobQuery.jobs.length > 0)
@@ -125,18 +102,18 @@ export default function App() {
 
   useEffect(
     function () {
-      setRouteCache({ ...routeCache, [route.path]: structuredClone(route) });
+      // setRouteCache({ ...routeCache, [route.path]: structuredClone(route) });
       // TODO add new property on the route that describes route
       //      in a general way: instead of '/jobs/32412342...' it should be
       //      'if (route.name === jobsFilterById) {....}'
       if (route.path === "/jobs") {
-        jobsQuery({
-          query: route.search.q || "",
-          page: route.search.page,
-          sortBy: route.search.sort,
-        }).then(function (data) {
-          setJobQuery(data);
-        });
+        // jobsFetch({
+        //   query: route.search.q || "",
+        //   page: route.search.page,
+        //   sortBy: route.search.sort,
+        // }).then(function (data) {
+        //   setJobQuery(data);
+        // });
       } else if (route.path === "/jobs/32412342141234") {
         console.log("/jobs/id");
       } else if (route.path === "/bookmarks") {
@@ -305,7 +282,6 @@ export default function App() {
               }
               itemsPerPage={PAGE_LIMIT}
               route={route}
-              routeCache={routeCache}
               routeGoTo={routeGoTo}
             >
               <JobList
