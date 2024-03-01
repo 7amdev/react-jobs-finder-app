@@ -276,8 +276,11 @@ export default function App() {
                 Jobs{" "}
                 {jobQuery.totalCount > 0 && (
                   <span className="fw-400 fs-23px ">
-                    ({(+route.search.page || 1) * PAGE_LIMIT} of{" "}
-                    {jobQuery.totalCount})
+                    (
+                    {route.path === "/jobs"
+                      ? (+route.search.page || 1) * PAGE_LIMIT
+                      : PAGE_LIMIT}{" "}
+                    of {jobQuery.totalCount})
                   </span>
                 )}
               </h1>
