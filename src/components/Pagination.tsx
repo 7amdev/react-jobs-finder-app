@@ -16,25 +16,25 @@ export default function Pagination({
   children,
 }: PaginationProps) {
   let totalPage: number = Math.floor(itemsTotal / itemsPerPage);
-  const currentPage: number = +route.search.page || 1;
+  const currentPage: number = +route.search["_page"] || 1;
 
   if (itemsTotal % itemsPerPage > 0) totalPage += 1;
 
   const onPreviousPageHandler = function () {
-    let prevPage = +(route.search.page || 1) - 1;
+    let prevPage = +(route.search["_page"] || 1) - 1;
 
     if (prevPage < 1) prevPage = 1;
-    route.search.page = String(prevPage);
+    route.search["_page"] = String(prevPage);
     delete route.search.select;
 
     routeGoTo(route);
   };
 
   const onNextPageHandler = function () {
-    let nextPage = +(route.search.page || 1) + 1;
+    let nextPage = +(route.search["_page"] || 1) + 1;
 
     if (nextPage > totalPage) nextPage = totalPage;
-    route.search.page = String(nextPage);
+    route.search["_page"] = String(nextPage);
     delete route.search.select;
 
     routeGoTo(route);

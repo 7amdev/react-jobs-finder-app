@@ -19,14 +19,11 @@ export default function App() {
   const [route, setRoute] = useState<Route>({
     path: "",
     params: {},
-    search: {},
+    search: { _page: "1", _limit: "" + PAGE_LIMIT, _sortBy: "relevant" },
   });
-  const { jobQuery, isLoading } = useJobs({
-    query: route.search.query,
-    limit: +route.search.limit,
-    page: route.search.page,
-    sortBy: route.search.sortBy,
-  });
+  const { jobQuery, isLoading } = useJobs(
+    `${API_URL}?${new URLSearchParams(route.search)}`
+  );
   const [bookmarks, setBookmarks] = useState<JobResume[]>([]);
 
   const jobsGetById = async function (id: number): Promise<Job | undefined> {
@@ -80,7 +77,7 @@ export default function App() {
   };
 
   const bookmarksGet = function (): JobResume[] {
-    const page = +route.search.page || 1;
+    const page = +route.search._page || 1;
     const end = page * PAGE_LIMIT;
     const start = end - PAGE_LIMIT;
 
@@ -88,8 +85,6 @@ export default function App() {
   };
 
   const jobIdAppCheck = function (): number {
-    console.log("JOB", jobQuery);
-
     if (+route.params.jobId) return +route.params.jobId;
     if (+route.search.select) return +route.search.select;
     if (route.path === "/jobs" && jobQuery.jobs.length > 0)
@@ -107,13 +102,7 @@ export default function App() {
       //      in a general way: instead of '/jobs/32412342...' it should be
       //      'if (route.name === jobsFilterById) {....}'
       if (route.path === "/jobs") {
-        // jobsFetch({
-        //   query: route.search.q || "",
-        //   page: route.search.page,
-        //   sortBy: route.search.sort,
-        // }).then(function (data) {
-        //   setJobQuery(data);
-        // });
+        console.log("path: /jobs");
       } else if (route.path === "/jobs/32412342141234") {
         console.log("/jobs/id");
       } else if (route.path === "/bookmarks") {
@@ -133,7 +122,11 @@ export default function App() {
       }
 
       const url = new URL(location.hash.slice(1), APP_URL);
-      const search = Object.fromEntries(url.searchParams);
+      const search = {
+        ...route.search,
+        ...Object.fromEntries(url.searchParams),
+      };
+
       const params: RouteParams = {};
 
       let i = 0,
@@ -151,6 +144,10 @@ export default function App() {
         }
       }
 
+      // TODO
+      // if path === '/' goto default
+      // if no-match then 404 and if no 404 then goto default.
+
       if (routeMatch) {
         const [routePath] = ROUTES[i];
         routeParams = [...routePath.matchAll(/(?:\/:([A-Za-z]+))/g)].map(
@@ -164,6 +161,7 @@ export default function App() {
         }
 
         setRoute({
+          ...route,
           path: url.pathname,
           params,
           search,
@@ -255,7 +253,7 @@ export default function App() {
                   <span className="fw-400 fs-23px ">
                     (
                     {route.path === "/jobs"
-                      ? (+route.search.page || 1) * PAGE_LIMIT
+                      ? (+route.search._page || 1) * PAGE_LIMIT
                       : PAGE_LIMIT}{" "}
                     of {jobQuery.totalCount})
                   </span>

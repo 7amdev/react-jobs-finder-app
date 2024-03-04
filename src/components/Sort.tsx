@@ -24,12 +24,14 @@ export default function Sort({ route, routeGoTo }: SortProps) {
       </svg>
       <button
         className={`jobs-sort__button jobs-sort__button--relevant ${
-          route.search.sort === "relevant" ? "jobs-sort__button--active" : ""
+          route.search._sort === "relevanceScore"
+            ? "jobs-sort__button--active"
+            : ""
         }`}
         onClick={(e) => {
           e.currentTarget.blur();
 
-          route.search.sort = "relevant";
+          route.search._sort = "relevanceScore";
           delete route.search.select;
           routeGoTo(route);
         }}
@@ -38,11 +40,11 @@ export default function Sort({ route, routeGoTo }: SortProps) {
       </button>
       <button
         className={`jobs-sort__button jobs-sort__button--recent ${
-          route.search.sort === "recent" ? "jobs-sort__button--active" : ""
+          route.search._sort === "daysAgo" ? "jobs-sort__button--active" : ""
         }`}
         onClick={(e) => {
           e.currentTarget.blur();
-          route.search.sort = "recent";
+          route.search._sort = "daysAgo";
           delete route.search.select;
           routeGoTo(route);
         }}
