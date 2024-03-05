@@ -6,13 +6,14 @@ type JobItemProps = {
   bookmarks: JobResume[];
   routeSearchAppend: (key: string, value: string) => string;
   setBookmarks: React.Dispatch<React.SetStateAction<JobResume[]>>;
+  bookmarksToggle: (job: JobResume) => void;
 };
 export default function JobItem({
   job,
   jobActive,
   bookmarks,
   routeSearchAppend,
-  setBookmarks,
+  bookmarksToggle,
 }: JobItemProps) {
   let url;
 
@@ -22,20 +23,6 @@ export default function JobItem({
   const isBookmarked = bookmarks.find(function (bookmark) {
     return bookmark.id === job.id;
   });
-
-  const onBookmarkHandler = function () {
-    setBookmarks(function (previousValue) {
-      const index = previousValue.findIndex(function (item) {
-        return item.id === job.id;
-      });
-
-      if (index === -1) return [...previousValue, job];
-
-      return previousValue.filter(function (_, idx) {
-        return index !== idx;
-      });
-    });
-  };
 
   return (
     <li
@@ -63,7 +50,7 @@ export default function JobItem({
               e.stopPropagation();
               e.currentTarget.blur();
 
-              onBookmarkHandler();
+              bookmarksToggle(job);
             }}
           >
             <svg

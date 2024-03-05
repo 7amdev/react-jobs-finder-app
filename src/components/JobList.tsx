@@ -11,6 +11,7 @@ type JobListProps = {
   itemsSelectFirst: boolean;
   routeSearchAppend: (key: string, value: string) => string;
   setBookmarks: React.Dispatch<React.SetStateAction<JobResume[]>>;
+  bookmarksToggle: (job: JobResume) => void;
 };
 
 export default function JobList({
@@ -22,6 +23,7 @@ export default function JobList({
   itemsSelectFirst,
   routeSearchAppend,
   setBookmarks,
+  bookmarksToggle,
 }: JobListProps) {
   let jobActiveId: number = -1;
   let jobFound = jobs.find(function (job) {
@@ -46,6 +48,7 @@ export default function JobList({
             key={job.id}
             job={job}
             jobActive={jobActiveId}
+            bookmarksToggle={bookmarksToggle}
             routeSearchAppend={routeSearchAppend}
             setBookmarks={setBookmarks}
             bookmarks={bookmarks}

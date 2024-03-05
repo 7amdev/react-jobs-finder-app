@@ -21,10 +21,13 @@ export default function App() {
     params: {},
     search: { _page: "1", _limit: "" + PAGE_LIMIT, _sortBy: "relevant" },
   });
+  // TODO: load jobs only on route.path === /jobs
   const { jobQuery, isLoading } = useJobs(
     `${API_URL}?${new URLSearchParams(route.search)}`
   );
-  const [bookmarks, setBookmarks] = useState<JobResume[]>([]);
+  const [bookmarks, setBookmarks] = useState<JobResume[]>(function () {
+    return JSON.parse(localStorage.getItem("bookmarks") || "[]");
+  });
 
   const jobsGetById = async function (id: number): Promise<Job | undefined> {
     if (!id) return undefined;
@@ -74,6 +77,24 @@ export default function App() {
     url += `${key}=${value}`;
 
     return url;
+  };
+
+  const bookmarksToggle = function (job: JobResume) {
+    const index = bookmarks.findIndex(function (item) {
+      return item.id === job.id;
+    });
+
+    let bookmarks_update;
+    if (index === -1) {
+      bookmarks_update = [...bookmarks, job];
+    } else {
+      bookmarks_update = bookmarks.filter(function (bookmark) {
+        return bookmark.id !== job.id;
+      });
+    }
+
+    localStorage.setItem("bookmarks", JSON.stringify(bookmarks_update));
+    setBookmarks(bookmarks_update);
   };
 
   const bookmarksGet = function (): JobResume[] {
@@ -295,6 +316,7 @@ export default function App() {
                 itemsSelectFirst={true}
                 routeSearchAppend={routeSearchAppend}
                 setBookmarks={setBookmarks}
+                bookmarksToggle={bookmarksToggle}
               />
             </Pagination>
             {/* )} */}
