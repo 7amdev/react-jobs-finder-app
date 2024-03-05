@@ -1,77 +1,23 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import JobSearch from "./JobSearch";
-import { Job, JobResume, Route, RouteParams, Routes } from "../lib/types";
-import { API_URL, APP_URL, DEFAULT_ROUTE, PAGE_LIMIT } from "../lib/constants";
+import { JobResume } from "../lib/types";
+import { API_URL, PAGE_LIMIT } from "../lib/constants";
 import Pagination from "./Pagination";
 import JobDetails from "./JobDetails";
 import BookmarksDropdown from "./BookmarksDropdown";
 import JobList from "./JobList";
 import Sort from "./Sort";
-import { useJobs } from "../lib/hooks";
+import { useJobs, useRouter } from "../lib/hooks";
 
 export default function App() {
-  const [route, setRoute] = useState<Route>({
-    path: "",
-    params: {},
-    search: { _page: "1", _limit: "" + PAGE_LIMIT, _sortBy: "relevant" },
-  });
+  const { route, routerLocationHref, routerSearchAppend } = useRouter();
   // TODO: load jobs only on route.path === /jobs
-  const { jobQuery, isLoading } = useJobs(
+  const { jobs, jobsGetById, isLoading } = useJobs(
     `${API_URL}?${new URLSearchParams(route.search)}`
   );
   const [bookmarks, setBookmarks] = useState<JobResume[]>(function () {
     return JSON.parse(localStorage.getItem("bookmarks") || "[]");
   });
-
-  const jobsGetById = async function (id: number): Promise<Job | undefined> {
-    if (!id) return undefined;
-    const response = await fetch(`${API_URL}/${id}`);
-    const data = await response.json();
-    return data as Job;
-  };
-
-  const routeGoTo = function (r: Route) {
-    let url = `/#${r.path}`;
-    const searchKeys = Object.keys(r.search);
-
-    if (searchKeys.length > 0) url += `?`;
-
-    searchKeys.forEach(function (searchKey, index, arr) {
-      url += `${searchKey}=${r.search[searchKey]}`;
-      if (index < arr.length - 1) {
-        url += `&`;
-      }
-    });
-
-    location.href = url;
-  };
-
-  const routeSearchAppend = function (key: string, value: string): string {
-    let url = `/#${route.path}`;
-    const searchKeys = Object.keys(route.search);
-
-    if (!key || !value) return url;
-
-    url += `?`;
-
-    searchKeys.forEach(function (searchKey, index, arr) {
-      if (key === searchKey) {
-        return;
-      }
-
-      url += `${searchKey}=${route.search[searchKey]}`;
-
-      if (index < arr.length - 1) {
-        url += `&`;
-      }
-    });
-
-    if (searchKeys.length > 0) url += `&`;
-
-    url += `${key}=${value}`;
-
-    return url;
-  };
 
   const bookmarksToggle = function (job: JobResume) {
     const index = bookmarks.findIndex(function (item) {
@@ -99,113 +45,17 @@ export default function App() {
     return bookmarks.slice(start, end);
   };
 
-  const jobIdAppCheck = function (): number {
+  const appCurrentJobId = function (): number | undefined {
     if (+route.params.jobId) return +route.params.jobId;
     if (+route.search.select) return +route.search.select;
-    if (route.path === "/jobs" && jobQuery.jobs.length > 0)
-      return jobQuery.jobs[0].id;
+    if (route.path === "/jobs" && jobs.data.length > 0) return jobs.data[0].id;
     if (route.path === "/bookmarks" && bookmarks.length > 0)
       return bookmarks[0].id;
 
-    return -1;
+    return undefined;
   };
 
-  useEffect(
-    function () {
-      // setRouteCache({ ...routeCache, [route.path]: structuredClone(route) });
-      // TODO add new property on the route that describes route
-      //      in a general way: instead of '/jobs/32412342...' it should be
-      //      'if (route.name === jobsFilterById) {....}'
-      if (route.path === "/jobs") {
-        console.log("path: /jobs");
-      } else if (route.path === "/jobs/32412342141234") {
-        console.log("/jobs/id");
-      } else if (route.path === "/bookmarks") {
-        // TODO: clear any state not relevant to this route
-        console.log("bookmarks");
-        // setJobQuery({ jobs: [], totalCount: 0 });
-      }
-    },
-    [route]
-  );
-
-  useEffect(function () {
-    const routerRoutes: Routes = [
-      ["/", /^\/$/g],
-      ["/jobs", /^\/jobs$/g],
-      ["/jobs/:jobId", /^\/jobs\/(\d+)$/g],
-      ["/jobs/:jobId/comments/:commentId", /^\/jobs\/(\d+)\/comments\/(\d+)$/g],
-      ["/bookmarks", /^\/bookmarks$/g],
-      ["/bookmarks/:jobId", /^\/bookmarks\/(\d+)$/g],
-    ];
-    const routerRedirectPath = "/#/jobs";
-    const routerNotFoundPath = "";
-
-    const onHashChangeHandler = function () {
-      if (!location.hash) {
-        location.href = routerRedirectPath;
-        return;
-      }
-
-      const url = new URL(location.hash.slice(1), APP_URL);
-      const search = {
-        ...route.search,
-        ...Object.fromEntries(url.searchParams),
-      };
-
-      const params: RouteParams = {};
-
-      let i = 0,
-        routeMatch,
-        routeParams;
-
-      for (; i < routerRoutes.length; i++) {
-        const [_, routeParser] = routerRoutes[i];
-        routeMatch = routeParser.exec(url.pathname);
-        routeParser.lastIndex = 0;
-
-        if (routeMatch) {
-          routeMatch.shift();
-          break;
-        }
-      }
-
-      if (!routeMatch) {
-        if (routerNotFoundPath) {
-          location.href = routerNotFoundPath;
-          return;
-        } else {
-          location.href = routerRedirectPath;
-          return;
-        }
-      }
-
-      const [routePath] = routerRoutes[i];
-      routeParams = [...routePath.matchAll(/(?:\/:([A-Za-z]+))/g)].map(
-        function ([_, param]) {
-          return param;
-        }
-      );
-
-      for (let j = 0; j < routeParams.length; j++) {
-        params[routeParams[j]] = routeMatch[j];
-      }
-
-      setRoute({
-        ...route,
-        path: url.pathname,
-        params,
-        search,
-      });
-    };
-
-    window.addEventListener("hashchange", onHashChangeHandler);
-    onHashChangeHandler();
-
-    return function () {
-      window.removeEventListener("hashchange", onHashChangeHandler);
-    };
-  }, []);
+  const currentJobId = appCurrentJobId();
 
   return (
     <>
@@ -245,29 +95,13 @@ export default function App() {
             <BookmarksDropdown />
           </div>
         </div>
-        <JobSearch key={route.search.q} route={route} routeGoTo={routeGoTo} />
+        <JobSearch
+          key={route.search.q}
+          route={route}
+          routeGoTo={routerLocationHref}
+        />
       </header>
       <main>
-        {/* <Bookmarks bookmarks={bookmarks} routePath={route.path}>
-          <Pagination
-            itemsTotal={bookmarks.length}
-            itemsPerPage={PAGE_LIMIT}
-            route={route}
-            routeCache={routeCache}
-            routeGoTo={routeGoTo}
-          >
-            <JobList
-              jobs={bookmarks}
-              jobActive={+route.params.jobId || +route.search.select}
-              bookmarks={bookmarks}
-              itemsTotal={bookmarks.length}
-              itemsPerPage={PAGE_LIMIT}
-              itemsSelectFirst={false}
-              routeSearchAppend={routeSearchAppend}
-              setBookmarks={setBookmarks}
-            />
-          </Pagination>
-        </Bookmarks> */}
         <section className="jobs">
           <div className="jobs__header">
             <a href="#/jobs" className="jobs__link">
@@ -277,13 +111,13 @@ export default function App() {
                 }`}
               >
                 Jobs{" "}
-                {jobQuery.totalCount > 0 && (
+                {jobs.totalCount > 0 && (
                   <span className="fw-400 fs-23px ">
                     (
                     {route.path === "/jobs"
                       ? (+route.search._page || 1) * PAGE_LIMIT
                       : PAGE_LIMIT}{" "}
-                    of {jobQuery.totalCount})
+                    of {jobs.totalCount})
                   </span>
                 )}
               </h1>
@@ -298,32 +132,28 @@ export default function App() {
                 <span className="fw-400 fs-23px ">({bookmarks.length})</span>
               </h1>
             </a>
-            <Sort route={route} routeGoTo={routeGoTo} />
+            <Sort route={route} routeGoTo={routerLocationHref} />
           </div>
           <section className="jobs__body">
             {["/", "/jobs", "/bookmarks"].includes(route.path) && (
               <Pagination
                 itemsTotal={
-                  route.path === "/jobs"
-                    ? jobQuery.totalCount
-                    : bookmarks.length
+                  route.path === "/jobs" ? jobs.totalCount : bookmarks.length
                 }
                 itemsPerPage={PAGE_LIMIT}
                 route={route}
-                routeGoTo={routeGoTo}
+                routeGoTo={routerLocationHref}
               >
                 <JobList
-                  jobs={route.path === "/jobs" ? jobQuery.jobs : bookmarksGet()}
+                  jobs={route.path === "/jobs" ? jobs.data : bookmarksGet()}
                   jobActive={+route.params.jobId || +route.search.select}
                   bookmarks={bookmarks}
                   itemsTotal={
-                    route.path === "/jobs"
-                      ? jobQuery.totalCount
-                      : bookmarks.length
+                    route.path === "/jobs" ? jobs.totalCount : bookmarks.length
                   }
                   itemsPerPage={PAGE_LIMIT}
                   itemsSelectFirst={true}
-                  routeSearchAppend={routeSearchAppend}
+                  routeSearchAppend={routerSearchAppend}
                   setBookmarks={setBookmarks}
                   bookmarksToggle={bookmarksToggle}
                 />
@@ -332,7 +162,11 @@ export default function App() {
           </section>
         </section>
         {route && (
-          <JobDetails jobId={jobIdAppCheck()} jobsGetById={jobsGetById} />
+          <JobDetails
+            key={currentJobId}
+            jobId={currentJobId}
+            jobsGetById={jobsGetById}
+          />
         )}
       </main>
     </>

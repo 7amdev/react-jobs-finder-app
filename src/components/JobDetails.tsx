@@ -2,30 +2,24 @@ import { useEffect, useState } from "react";
 import { Job } from "../lib/types";
 
 type JobDetailsProps = {
-  jobId: number;
+  jobId: number | undefined;
   jobsGetById: (id: number) => Promise<Job | undefined>;
 };
 
 export default function JobDetails({ jobId, jobsGetById }: JobDetailsProps) {
   const [job, setJob] = useState<Job>();
 
-  // TODO test if useEffect '[jobId]' i necessary
-  useEffect(
-    function () {
-      if (jobId === -1) {
-        setJob(undefined);
-        return;
-      }
-      jobsGetById(jobId).then(function (data) {
-        setJob(data);
-      });
-    },
-    [jobId]
-  );
+  useEffect(function () {
+    if (!jobId) return;
+
+    jobsGetById(jobId).then(function (data) {
+      setJob(data);
+    });
+  }, []);
 
   return (
     <>
-      {job && (
+      {(job && (
         <section className="job-details">
           <section className="job-details__header">
             <img
@@ -180,7 +174,7 @@ export default function JobDetails({ jobId, jobsGetById }: JobDetailsProps) {
           </section>
           <div className="spinner"></div>
         </section>
-      )}
+      )) || <b>no data for now..</b>}
     </>
   );
 }

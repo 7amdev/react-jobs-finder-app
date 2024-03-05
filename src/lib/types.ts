@@ -20,8 +20,8 @@ export type JobResume = Pick<
   "id" | "title" | "badgeLetters" | "company" | "daysAgo" | "relevanceScore"
 >;
 
-export type JobQuery = {
-  jobs: Job[];
+export type Jobs = {
+  data: Job[];
   totalCount: number;
 };
 
