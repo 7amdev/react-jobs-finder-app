@@ -1,13 +1,13 @@
-import { useState } from "react";
 import JobSearch from "./JobSearch";
-import { JobResume } from "../lib/types";
 import { API_URL, PAGE_LIMIT } from "../lib/constants";
 import Pagination from "./Pagination";
 import JobDetails from "./JobDetails";
 import BookmarksDropdown from "./BookmarksDropdown";
 import JobList from "./JobList";
 import Sort from "./Sort";
-import { useJobs, useRouter } from "../lib/hooks";
+import { useRouter } from "../lib/routerHook";
+import useBookmarks from "../lib/bookmarksHook";
+import { useJobs } from "../lib/jobsHook";
 
 export default function App() {
   const { route, routerLocationHref, routerSearchAppend } = useRouter();
@@ -15,35 +15,7 @@ export default function App() {
   const { jobs, jobsGetById, isLoading } = useJobs(
     `${API_URL}?${new URLSearchParams(route.search)}`
   );
-  const [bookmarks, setBookmarks] = useState<JobResume[]>(function () {
-    return JSON.parse(localStorage.getItem("bookmarks") || "[]");
-  });
-
-  const bookmarksToggle = function (job: JobResume) {
-    const index = bookmarks.findIndex(function (item) {
-      return item.id === job.id;
-    });
-
-    let bookmarks_update;
-    if (index === -1) {
-      bookmarks_update = [...bookmarks, job];
-    } else {
-      bookmarks_update = bookmarks.filter(function (bookmark) {
-        return bookmark.id !== job.id;
-      });
-    }
-
-    localStorage.setItem("bookmarks", JSON.stringify(bookmarks_update));
-    setBookmarks(bookmarks_update);
-  };
-
-  const bookmarksGet = function (): JobResume[] {
-    const page = +route.search._page || 1;
-    const end = page * PAGE_LIMIT;
-    const start = end - PAGE_LIMIT;
-
-    return bookmarks.slice(start, end);
-  };
+  const { bookmarks, bookmarksGet, bookmarksToggle } = useBookmarks();
 
   const appCurrentJobId = function (): number | undefined {
     if (+route.params.jobId) return +route.params.jobId;
@@ -132,7 +104,7 @@ export default function App() {
                 <span className="fw-400 fs-23px ">({bookmarks.length})</span>
               </h1>
             </a>
-            <Sort route={route} routeGoTo={routerLocationHref} />
+            <Sort />
           </div>
           <section className="jobs__body">
             {["/", "/jobs", "/bookmarks"].includes(route.path) && (
@@ -141,8 +113,6 @@ export default function App() {
                   route.path === "/jobs" ? jobs.totalCount : bookmarks.length
                 }
                 itemsPerPage={PAGE_LIMIT}
-                route={route}
-                routeGoTo={routerLocationHref}
               >
                 <JobList
                   jobs={route.path === "/jobs" ? jobs.data : bookmarksGet()}
@@ -154,7 +124,6 @@ export default function App() {
                   itemsPerPage={PAGE_LIMIT}
                   itemsSelectFirst={true}
                   routeSearchAppend={routerSearchAppend}
-                  setBookmarks={setBookmarks}
                   bookmarksToggle={bookmarksToggle}
                 />
               </Pagination>

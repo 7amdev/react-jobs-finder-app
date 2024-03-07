@@ -1,20 +1,18 @@
+import { useRouterContext } from "../lib/routerContext";
 import { Route, RouteCache } from "../lib/types";
 
 type PaginationProps = {
   itemsTotal: number;
   itemsPerPage: number;
-  route: Route;
-  routeGoTo: (r: Route) => void;
   children: React.ReactNode;
 };
 
 export default function Pagination({
   itemsTotal,
   itemsPerPage,
-  route,
-  routeGoTo,
   children,
 }: PaginationProps) {
+  const { route, routerLocationHref } = useRouterContext();
   let totalPage: number = Math.floor(itemsTotal / itemsPerPage);
   const currentPage: number = +route.search["_page"] || 1;
 
@@ -27,7 +25,7 @@ export default function Pagination({
     route.search["_page"] = String(prevPage);
     delete route.search.select;
 
-    routeGoTo(route);
+    routerLocationHref(route);
   };
 
   const onNextPageHandler = function () {
@@ -37,7 +35,7 @@ export default function Pagination({
     route.search["_page"] = String(nextPage);
     delete route.search.select;
 
-    routeGoTo(route);
+    routerLocationHref(route);
   };
 
   return (

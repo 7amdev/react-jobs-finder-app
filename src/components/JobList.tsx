@@ -1,4 +1,5 @@
 import { PAGE_LIMIT } from "../lib/constants";
+import { useRouterContext } from "../lib/routerContext";
 import { Job, JobResume } from "../lib/types";
 import JobItem from "./JobItem";
 
@@ -10,7 +11,6 @@ type JobListProps = {
   itemsPerPage: number;
   itemsSelectFirst: boolean;
   routeSearchAppend: (key: string, value: string) => string;
-  setBookmarks: React.Dispatch<React.SetStateAction<JobResume[]>>;
   bookmarksToggle: (job: JobResume) => void;
 };
 
@@ -21,8 +21,6 @@ export default function JobList({
   itemsTotal,
   itemsPerPage,
   itemsSelectFirst,
-  routeSearchAppend,
-  setBookmarks,
   bookmarksToggle,
 }: JobListProps) {
   let jobActiveId: number = -1;
@@ -49,8 +47,6 @@ export default function JobList({
             job={job}
             jobActive={jobActiveId}
             bookmarksToggle={bookmarksToggle}
-            routeSearchAppend={routeSearchAppend}
-            setBookmarks={setBookmarks}
             bookmarks={bookmarks}
           />
         );

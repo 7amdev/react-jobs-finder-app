@@ -1,24 +1,23 @@
+import { useRouterContext } from "../lib/routerContext";
 import { Job, JobResume, Route } from "../lib/types";
 
 type JobItemProps = {
   job: JobResume;
   jobActive: number;
   bookmarks: JobResume[];
-  routeSearchAppend: (key: string, value: string) => string;
-  setBookmarks: React.Dispatch<React.SetStateAction<JobResume[]>>;
   bookmarksToggle: (job: JobResume) => void;
 };
 export default function JobItem({
   job,
   jobActive,
   bookmarks,
-  routeSearchAppend,
   bookmarksToggle,
 }: JobItemProps) {
+  const { routerSearchAppend } = useRouterContext();
   let url;
 
-  if (job.id) url = routeSearchAppend("select", "" + job.id);
-  else url = routeSearchAppend("", "");
+  if (job.id) url = routerSearchAppend("select", "" + job.id);
+  else url = routerSearchAppend("", "");
 
   const isBookmarked = bookmarks.find(function (bookmark) {
     return bookmark.id === job.id;

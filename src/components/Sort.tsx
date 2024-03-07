@@ -1,3 +1,4 @@
+import { useRouterContext } from "../lib/routerContext";
 import { Route } from "../lib/types";
 
 type SortProps = {
@@ -5,7 +6,9 @@ type SortProps = {
   routeGoTo: (r: Route) => void;
 };
 
-export default function Sort({ route, routeGoTo }: SortProps) {
+export default function Sort() {
+  const { route, routerLocationHref } = useRouterContext();
+
   return (
     <section className="jobs-sort">
       <svg
@@ -33,7 +36,7 @@ export default function Sort({ route, routeGoTo }: SortProps) {
 
           route.search._sort = "relevanceScore";
           delete route.search.select;
-          routeGoTo(route);
+          routerLocationHref(route);
         }}
       >
         Relevant
@@ -46,7 +49,7 @@ export default function Sort({ route, routeGoTo }: SortProps) {
           e.currentTarget.blur();
           route.search._sort = "daysAgo";
           delete route.search.select;
-          routeGoTo(route);
+          routerLocationHref(route);
         }}
       >
         Recent
