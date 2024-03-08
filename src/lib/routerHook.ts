@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Job, Jobs, Route, RouteParams, Routes } from "./types";
-import { API_URL, APP_URL, PAGE_LIMIT } from "./constants";
+import { Route, RouteParams, Routes } from "./types";
+import { APP_URL, PAGE_LIMIT } from "./constants";
 
 export function useRouter() {
   const [route, setRoute] = useState<Route>({
@@ -70,6 +70,8 @@ export function useRouter() {
     for (let j = 0; j < routeParams.length; j++) {
       params[routeParams[j]] = routeMatch[j];
     }
+
+    console.log("Route: ", route, search);
 
     setRoute({
       ...route,

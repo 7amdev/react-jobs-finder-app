@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { JobResume } from "./types";
+import { JobResume, Route } from "./types";
 import { PAGE_LIMIT } from "./constants";
 import { useRouterContext } from "./routerContext";
 
-export default function useBookmarks() {
+export default function useBookmarks(route: Route) {
   const [bookmarks, setBookmarks] = useState<JobResume[]>(function () {
     return JSON.parse(localStorage.getItem("bookmarks") || "[]");
   });
-  const { route } = useRouterContext();
+  // const { route } = useRouterContext();
 
   const bookmarksToggle = function (job: JobResume) {
     const index = bookmarks.findIndex(function (item) {

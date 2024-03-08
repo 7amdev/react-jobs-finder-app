@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import { Job, Jobs } from "./types";
-import { API_URL } from "./constants";
+import { Jobs } from "./types";
 
 export function useJobs(url: string): {
   jobs: Jobs;
-  jobsGetById: (id: number) => Promise<Job | undefined>;
   isLoading: boolean;
   error: string;
 } {
@@ -15,23 +13,13 @@ export function useJobs(url: string): {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const jobsGetById = async function (id: number): Promise<Job | undefined> {
-    if (!id) return undefined;
-    const response = await fetch(`${API_URL}/${id}`);
-    if (!response.ok) {
-      console.error("Error: reponse header status not ok!");
-      return;
-    }
-    const data = await response.json();
-    return data as Job;
-  };
-
   useEffect(
     function () {
-      setIsLoading(true);
+      if (!url) return;
+
+      // setIsLoading(true);
       let ignore = false; // Flag to avoid race conditions
 
-      console.log("Hook running...");
       fetch(url, {
         method: "GET",
       })
@@ -41,8 +29,10 @@ export function useJobs(url: string): {
           return Promise.all([response.json(), +totalCount]);
         })
         .then(([data, totalCount]) => {
+          console.log("data: ", data);
+
           if (!ignore) {
-            setIsLoading(false);
+            // setIsLoading(false);
             setJobs({
               data,
               totalCount,
@@ -57,11 +47,11 @@ export function useJobs(url: string): {
 
       return function () {
         ignore = true;
-        setIsLoading(false);
+        // setIsLoading(false);
       };
     },
     [url]
   );
 
-  return { jobs, isLoading, error, jobsGetById };
+  return { jobs, isLoading, error };
 }

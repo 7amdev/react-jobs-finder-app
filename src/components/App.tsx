@@ -1,6 +1,5 @@
 import JobSearch from "./JobSearch";
 import { API_URL, PAGE_LIMIT } from "../lib/constants";
-import Pagination from "./Pagination";
 import JobDetails from "./JobDetails";
 import BookmarksDropdown from "./BookmarksDropdown";
 import JobList from "./JobList";
@@ -8,14 +7,17 @@ import Sort from "./Sort";
 import { useRouter } from "../lib/routerHook";
 import useBookmarks from "../lib/bookmarksHook";
 import { useJobs } from "../lib/jobsHook";
+import Bookmarks from "./Bookmarks";
 
 export default function App() {
-  const { route, routerLocationHref, routerSearchAppend } = useRouter();
-  // TODO: load jobs only on route.path === /jobs
-  const { jobs, jobsGetById, isLoading } = useJobs(
-    `${API_URL}?${new URLSearchParams(route.search)}`
-  );
-  const { bookmarks, bookmarksGet, bookmarksToggle } = useBookmarks();
+  const { route, routerLocationHref } = useRouter();
+  const url =
+    route.path === "/jobs"
+      ? `${API_URL}?${new URLSearchParams(route.search)}`
+      : "";
+
+  const { jobs, isLoading } = useJobs(url);
+  const { bookmarks, bookmarksToggle } = useBookmarks(route);
 
   const appCurrentJobId = function (): number | undefined {
     if (+route.params.jobId) return +route.params.jobId;
@@ -107,7 +109,20 @@ export default function App() {
             <Sort />
           </div>
           <section className="jobs__body">
-            {["/", "/jobs", "/bookmarks"].includes(route.path) && (
+            {(route.path === "/" || route.path === "/jobs") && (
+              <JobList
+                jobs={jobs}
+                bookmarks={bookmarks}
+                bookmarksToggle={bookmarksToggle}
+              />
+            )}
+            {route.path === "/bookmarks" && (
+              <Bookmarks
+                bookmarks={bookmarks}
+                bookmarksToggle={bookmarksToggle}
+              />
+            )}
+            {/* {["/", "/jobs", "/bookmarks"].includes(route.path) && (
               <Pagination
                 itemsTotal={
                   route.path === "/jobs" ? jobs.totalCount : bookmarks.length
@@ -127,16 +142,10 @@ export default function App() {
                   bookmarksToggle={bookmarksToggle}
                 />
               </Pagination>
-            )}
+            )} */}
           </section>
         </section>
-        {route && (
-          <JobDetails
-            key={currentJobId}
-            jobId={currentJobId}
-            jobsGetById={jobsGetById}
-          />
-        )}
+        {route && <JobDetails key={currentJobId} jobId={currentJobId} />}
       </main>
     </>
   );

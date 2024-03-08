@@ -1,21 +1,40 @@
 import { useEffect, useState } from "react";
 import { Job } from "../lib/types";
+import { API_URL } from "../lib/constants";
 
 type JobDetailsProps = {
   jobId: number | undefined;
-  jobsGetById: (id: number) => Promise<Job | undefined>;
 };
 
-export default function JobDetails({ jobId, jobsGetById }: JobDetailsProps) {
+export default function JobDetails({ jobId }: JobDetailsProps) {
   const [job, setJob] = useState<Job>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  useEffect(function () {
-    if (!jobId) return;
+  useEffect(
+    function () {
+      const jobsGetById = async function (id: number | undefined) {
+        if (!id) return undefined;
 
-    jobsGetById(jobId).then(function (data) {
-      setJob(data);
-    });
-  }, []);
+        setIsLoading(true);
+        const response = await fetch(`${API_URL}/${id}`);
+        if (!response.ok) {
+          console.error("Error: reponse header status not ok!");
+          setError("Error: reponse header status not ok!");
+          setIsLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+
+        setIsLoading(false);
+        setJob(data);
+      };
+
+      jobsGetById(jobId);
+    },
+    [jobId]
+  );
 
   return (
     <>

@@ -1,29 +1,24 @@
-import { API_URL, PAGE_LIMIT } from "../lib/constants";
+import { PAGE_LIMIT } from "../lib/constants";
 import { useRouter } from "../lib/routerHook";
-import { JobResume, Jobs } from "../lib/types";
+import { JobResume } from "../lib/types";
 import List from "./List";
 import Pagination from "./Pagination";
 
-type JobListProps = {
-  jobs: Jobs;
+type Bookmarks = {
   bookmarks: JobResume[];
   bookmarksToggle: (job: JobResume) => void;
 };
 
-export default function JobList({
-  jobs,
-  bookmarks,
-  bookmarksToggle,
-}: JobListProps) {
+export default function Bookmarks({ bookmarks, bookmarksToggle }: Bookmarks) {
   const { route } = useRouter();
 
   return (
-    <Pagination itemsTotal={jobs.totalCount} itemsPerPage={PAGE_LIMIT}>
+    <Pagination itemsTotal={bookmarks.length} itemsPerPage={PAGE_LIMIT}>
       <List
-        jobs={jobs.data}
+        jobs={bookmarks}
         jobActive={+route.params.jobId || +route.search.select}
         bookmarks={bookmarks}
-        itemsTotal={jobs.totalCount}
+        itemsTotal={bookmarks.length}
         itemsPerPage={PAGE_LIMIT}
         itemsSelectFirst={true}
         bookmarksToggle={bookmarksToggle}
