@@ -13,11 +13,11 @@ export default function JobItem({
   bookmarks,
   bookmarksToggle,
 }: JobItemProps) {
-  const { routerSearchAppend } = useRouterContext();
+  const { routeSearchAppend, routeUrlGet } = useRouterContext();
   let url;
 
-  if (job.id) url = routerSearchAppend("select", "" + job.id);
-  else url = routerSearchAppend("", "");
+  if (job.id) url = routeSearchAppend("select", "" + job.id);
+  else url = routeUrlGet();
 
   const isBookmarked = bookmarks.find(function (bookmark) {
     return bookmark.id === job.id;

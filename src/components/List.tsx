@@ -3,9 +3,10 @@ import { JobResume } from "../lib/types";
 import JobItem from "./JobItem";
 
 type ListProps = {
-  jobs: JobResume[];
-  jobActive: number;
+  data: JobResume[];
   bookmarks: JobResume[];
+  page?: number;
+  itemsActive: number;
   itemsTotal: number;
   itemsPerPage: number;
   itemsSelectFirst: boolean;
@@ -13,32 +14,38 @@ type ListProps = {
 };
 
 export default function List({
-  jobs,
-  jobActive,
+  data,
   bookmarks,
+  page = 1,
+  itemsActive,
   itemsTotal,
   itemsPerPage,
   itemsSelectFirst,
   bookmarksToggle,
 }: ListProps) {
   let jobActiveId: number = -1;
-  let jobFound = jobs.find(function (job) {
-    return job.id === +jobActive;
+  let jobFound = data.find(function (job) {
+    return job.id === +itemsActive;
   });
 
   if (jobFound) {
     jobActiveId = jobFound.id;
   } else {
     if (!jobFound && itemsSelectFirst) {
-      if (jobs.length > 0) {
-        jobActiveId = jobs[0].id;
+      if (data.length > 0) {
+        jobActiveId = data[0].id;
       }
     }
   }
 
+  const end = page * PAGE_LIMIT;
+  const start = end - PAGE_LIMIT;
+
+  // TODO: isBookmarked flag
+
   return (
     <ul className={`jobs__list ${itemsTotal > itemsPerPage ? "mi-auto" : ""}`}>
-      {jobs.slice(0, PAGE_LIMIT).map(function (job: JobResume) {
+      {data.slice(start, end).map(function (job: JobResume) {
         return (
           <JobItem
             key={job.id}

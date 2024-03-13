@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { Route, RouteParams, Routes } from "./types";
 import { APP_URL, PAGE_LIMIT } from "./constants";
 
-export function useRouter() {
+export function _useRouter() {
   const [route, setRoute] = useState<Route>({
     path: "",
     params: {},
     search: { _page: "1", _limit: "" + PAGE_LIMIT, _sortBy: "relevant" },
+    searchChanges: {},
   });
 
   const routerRoutes: Routes = [
@@ -19,67 +20,6 @@ export function useRouter() {
   ];
   const routerRedirectPath = "/#/jobs";
   const routerNotFoundPath = "";
-
-  const onHashChangeHandler = function () {
-    if (!location.hash) {
-      location.href = routerRedirectPath;
-      return;
-    }
-
-    const url = new URL(location.hash.slice(1), APP_URL);
-    const search = {
-      ...route.search,
-      ...Object.fromEntries(url.searchParams),
-    };
-
-    const params: RouteParams = {};
-
-    let i = 0,
-      routeMatch,
-      routeParams;
-
-    for (; i < routerRoutes.length; i++) {
-      const [_, routeParser] = routerRoutes[i];
-      routeMatch = routeParser.exec(url.pathname);
-      routeParser.lastIndex = 0;
-
-      if (routeMatch) {
-        routeMatch.shift();
-        break;
-      }
-    }
-
-    if (!routeMatch) {
-      if (routerNotFoundPath) {
-        location.href = routerNotFoundPath;
-        return;
-      } else {
-        location.href = routerRedirectPath;
-        return;
-      }
-    }
-
-    const [routePath] = routerRoutes[i];
-    routeParams = [...routePath.matchAll(/(?:\/:([A-Za-z]+))/g)].map(function ([
-      _,
-      param,
-    ]) {
-      return param;
-    });
-
-    for (let j = 0; j < routeParams.length; j++) {
-      params[routeParams[j]] = routeMatch[j];
-    }
-
-    console.log("Route: ", route, search);
-
-    setRoute({
-      ...route,
-      path: url.pathname,
-      params,
-      search,
-    });
-  };
 
   const routerLocationHref = function (r: Route) {
     let url = `/#${r.path}`;
@@ -125,6 +65,66 @@ export function useRouter() {
   };
 
   useEffect(function () {
+    const onHashChangeHandler = function () {
+      if (!location.hash) {
+        location.href = routerRedirectPath;
+        return;
+      }
+
+      const url = new URL(location.hash.slice(1), APP_URL);
+      const search = {
+        ...route.search,
+        ...Object.fromEntries(url.searchParams),
+      };
+
+      const params: RouteParams = {};
+
+      let i = 0,
+        routeMatch,
+        routeParams;
+
+      for (; i < routerRoutes.length; i++) {
+        const [_, routeParser] = routerRoutes[i];
+        routeMatch = routeParser.exec(url.pathname);
+        routeParser.lastIndex = 0;
+
+        if (routeMatch) {
+          routeMatch.shift();
+          break;
+        }
+      }
+
+      if (!routeMatch) {
+        if (routerNotFoundPath) {
+          location.href = routerNotFoundPath;
+          return;
+        } else {
+          location.href = routerRedirectPath;
+          return;
+        }
+      }
+
+      const [routePath] = routerRoutes[i];
+      routeParams = [...routePath.matchAll(/(?:\/:([A-Za-z]+))/g)].map(
+        function ([_, param]) {
+          return param;
+        }
+      );
+
+      for (let j = 0; j < routeParams.length; j++) {
+        params[routeParams[j]] = routeMatch[j];
+      }
+
+      console.log("Route: ", route, search);
+
+      setRoute({
+        ...route,
+        path: url.pathname,
+        params,
+        search,
+      });
+    };
+
     window.addEventListener("hashchange", onHashChangeHandler);
     onHashChangeHandler();
 

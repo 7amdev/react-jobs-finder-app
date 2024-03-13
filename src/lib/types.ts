@@ -46,5 +46,6 @@ export type Route = {
   path: string;
   params: RouteParams;
   search: { [key: string]: string };
+  searchChanges: { [key: string]: string };
 };
 export type RouteCache = { [key: string]: Route };

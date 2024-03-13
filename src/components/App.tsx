@@ -4,15 +4,18 @@ import JobDetails from "./JobDetails";
 import BookmarksDropdown from "./BookmarksDropdown";
 import JobList from "./JobList";
 import Sort from "./Sort";
-import { useRouter } from "../lib/routerHook";
 import useBookmarks from "../lib/bookmarksHook";
 import { useJobs } from "../lib/jobsHook";
 import Bookmarks from "./Bookmarks";
+import { useRouterContext } from "../lib/routerContext";
 
 export default function App() {
-  const { route, routerLocationHref } = useRouter();
+  // TODO: isBookmarked flag
+
+  const { route, routerLocationHref } = useRouterContext();
+
   const url =
-    route.path === "/jobs"
+    route.path === "/jobs" && !route.search.select
       ? `${API_URL}?${new URLSearchParams(route.search)}`
       : "";
 

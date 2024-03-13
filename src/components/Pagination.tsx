@@ -12,7 +12,8 @@ export default function Pagination({
   itemsPerPage,
   children,
 }: PaginationProps) {
-  const { route, routerLocationHref } = useRouterContext();
+  const { routeClone, routerLocationHref } = useRouterContext();
+  let route = routeClone();
   let totalPage: number = Math.floor(itemsTotal / itemsPerPage);
   const currentPage: number = +route.search["_page"] || 1;
 
@@ -22,6 +23,7 @@ export default function Pagination({
     let prevPage = +(route.search["_page"] || 1) - 1;
 
     if (prevPage < 1) prevPage = 1;
+
     route.search["_page"] = String(prevPage);
     delete route.search.select;
 
