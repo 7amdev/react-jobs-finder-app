@@ -10,7 +10,7 @@ import Bookmarks from "./Bookmarks";
 import { useRouterContext } from "../lib/routerContext";
 
 export default function App() {
-  // TODO: isBookmarked flag
+  // TODO: refactor search, get a route clone and do updates on it
 
   const { route, routerLocationHref } = useRouterContext();
 

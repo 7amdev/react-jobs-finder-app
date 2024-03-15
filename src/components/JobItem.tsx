@@ -3,14 +3,14 @@ import { Job, JobResume, Route } from "../lib/types";
 
 type JobItemProps = {
   job: JobResume;
-  jobActive: number;
-  bookmarks: JobResume[];
+  isActive: boolean;
+  isBookmarked: boolean;
   bookmarksToggle: (job: JobResume) => void;
 };
 export default function JobItem({
   job,
-  jobActive,
-  bookmarks,
+  isActive,
+  isBookmarked = false,
   bookmarksToggle,
 }: JobItemProps) {
   const { routeSearchAppend, routeUrlGet } = useRouterContext();
@@ -19,20 +19,14 @@ export default function JobItem({
   if (job.id) url = routeSearchAppend("select", "" + job.id);
   else url = routeUrlGet();
 
-  const isBookmarked = bookmarks.find(function (bookmark) {
-    return bookmark.id === job.id;
-  });
-
   return (
     <li
       key={job.id}
-      className={`jobs__item self-center ${
-        jobActive === job.id && "job__item--active"
-      }`}
+      className={`jobs__item self-center ${isActive && "job__item--active"}`}
     >
       <a
         href={`${url}`}
-        className={`job-item ${job.id === jobActive && "job-item--active"}`}
+        className={`job-item ${isActive && "job-item--active"}`}
       >
         <div className="job-item__badge-letter">{job.badgeLetters}</div>
         <section className="job-item__info">

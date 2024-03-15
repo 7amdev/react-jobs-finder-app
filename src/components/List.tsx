@@ -23,25 +23,26 @@ export default function List({
   itemsSelectFirst,
   bookmarksToggle,
 }: ListProps) {
-  let jobActiveId: number = -1;
+  let jobActiveId: number =
+    (itemsSelectFirst && data.length > 0 && data[0].id) || -1;
   let jobFound = data.find(function (job) {
     return job.id === +itemsActive;
   });
 
   if (jobFound) {
     jobActiveId = jobFound.id;
-  } else {
-    if (!jobFound && itemsSelectFirst) {
-      if (data.length > 0) {
-        jobActiveId = data[0].id;
-      }
-    }
   }
-
   const end = page * PAGE_LIMIT;
   const start = end - PAGE_LIMIT;
 
-  // TODO: isBookmarked flag
+  const isBookmarked = bookmarks.reduce(function (
+    acc: { [key: number]: boolean },
+    bookmark: JobResume
+  ) {
+    acc[bookmark.id] = true;
+    return acc;
+  },
+  {});
 
   return (
     <ul className={`jobs__list ${itemsTotal > itemsPerPage ? "mi-auto" : ""}`}>
@@ -50,9 +51,9 @@ export default function List({
           <JobItem
             key={job.id}
             job={job}
-            jobActive={jobActiveId}
+            isActive={jobActiveId === job.id}
+            isBookmarked={isBookmarked[job.id]}
             bookmarksToggle={bookmarksToggle}
-            bookmarks={bookmarks}
           />
         );
       })}
