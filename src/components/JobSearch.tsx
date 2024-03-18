@@ -1,15 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Route, Search } from "../lib/types";
+import { useRouterContext } from "../lib/routerContext";
 
-type JobSearchProps = {
-  route: Route;
-  routeGoTo: (r: Route) => void;
-};
-
-export default function JobSearch({ route, routeGoTo }: JobSearchProps) {
+export default function JobSearch() {
+  const { routeClone, routerLocationHref } = useRouterContext();
+  let route = routeClone();
   const [value, setValue] = useState<string>(route.search.q || "");
   const inputEl = useRef<HTMLInputElement>(null);
-
   const isActive = value ? true : false;
 
   const onChangeHandler = function (inputValue: string) {
@@ -26,14 +22,14 @@ export default function JobSearch({ route, routeGoTo }: JobSearchProps) {
 
         if (value === "") {
           delete route.search.q;
-          routeGoTo(route);
+          routerLocationHref(route);
           return;
         }
 
         route.path = "/jobs";
         route.search.q = value;
 
-        routeGoTo(route);
+        routerLocationHref(route);
       }, 500);
 
       return function () {

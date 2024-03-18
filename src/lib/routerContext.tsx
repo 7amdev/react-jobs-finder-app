@@ -12,6 +12,11 @@ const routerRoutes: Routes = [
 ];
 const routerRedirectPath = "/#/jobs";
 const routerNotFoundPath = "";
+const routeSearchDefault = {
+  _page: "1",
+  _limit: "" + PAGE_LIMIT,
+  _sortBy: "relevant",
+};
 
 function useRouterProviderValue() {
   const [route, setRoute] = useState<Route>({
@@ -20,9 +25,6 @@ function useRouterProviderValue() {
     search: { _page: "1", _limit: "" + PAGE_LIMIT, _sortBy: "relevant" },
     searchChanges: {},
   });
-  // const [previousRoute, setPreviousRoute] = useState<Route | undefined>(
-  //   undefined
-  // );
 
   const routerLocationHref = function (r: Route) {
     let url = `/#${r.path}`;
@@ -159,13 +161,12 @@ export function useRouterListenHashChange() {
         if (isMounted) {
           setRoute(function (previousRoute) {
             if (previousRoute.path !== url.pathname) {
-              previousRoute.search = {
-                _page: "1",
-                _limit: "" + PAGE_LIMIT,
-                _sortBy: "relevant",
-              };
+              previousRoute.search = routeSearchDefault;
             } else {
+              // To prevent http call to /jobs since we are on the same
+              // path and on the same page index;
               delete previousRoute.search.select;
+              delete previousRoute.search.q;
             }
 
             const search = {
